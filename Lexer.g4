@@ -15,6 +15,7 @@ INCREASE        : '+=';
 DESCRESE        : '-=';
 SELFMULTIPLY    : '*=';
 SELFDIVIDE      : '/=';
+SELFMODULO      : '%=';
 EQUAL           : '==';
 NOT_EQUAL       : '!=';
 LESS            : '<';
@@ -25,6 +26,7 @@ PLUS            : '+';
 MINUS           : '-';
 MULTIPLY        : '*';
 DIVIDE          : '/';
+MODULO          : '%';
 COLON           : ':';
 SEMICOLON       : ';';
 
