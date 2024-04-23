@@ -12,7 +12,7 @@ PRINTF          : 'printf';
 // OPERATORS:
 ASSIGN          : '=';
 INCREASE        : '+=';
-DESCRESE        : '-=';
+DECREASE        : '-=';
 SELFMULTIPLY    : '*=';
 SELFDIVIDE      : '/=';
 SELFMODULO      : '%=';
@@ -29,6 +29,8 @@ DIVIDE          : '/';
 MODULO          : '%';
 COLON           : ':';
 SEMICOLON       : ';';
+INCREMENT       : '++';
+DECREMENT       : '--';
 
 // BRACKETS:
 LRB             : '(';

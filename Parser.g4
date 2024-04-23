@@ -16,21 +16,21 @@ varDeclInit : varDeclId
             | varDeclId COLON simpleExp;
 
 varDeclId : ID
-          | ID LSB INT RSB;
+          | ID LSB NUMCONST RSB;
 
 typeSpec : INT
          | BOOL
          | CHAR;
 
-funDecl : (typeSpec ID LRB params RRB stmt)
-        | (VOID ID LRB params RRB stmt);
+funDecl : typeSpec ID LRB params RRB stmt
+        | VOID ID LRB params RRB stmt;
 
 params : param*;
 
 param : typeSpec paramId;
 
 paramId : ID
-        | ID LSB INT RSB;
+        | ID LSB RSB;
 
 stmt : expStmt | compoundStmt | selectStmt | iterStmt | returnStmt | breakStmt;
 
@@ -42,48 +42,65 @@ localDecls : scopedVarDecl*;
 
 stmtList : stmt*;
 
-selectStmt : (IF simpleExp stmt) | IF simpleExp stmt ELSE stmt;
+selectStmt : IF simpleExp stmt
+           | IF simpleExp stmt ELSE stmt;
 
-iterStmt : (WHILE LRB simpleExp RRB stmt) | (FOR LRB varDecl expStmt exp RRB stmt);
+iterStmt : WHILE LRB simpleExp RRB stmt
+         | FOR LRB varDecl expStmt exp RRB stmt;
 
 returnStmt : (RETURN SEMICOLON) | (RETURN exp SEMICOLON);
 
 breakStmt : BREAK SEMICOLON;
 
-exp : (mutable ASSIGN exp)
-    | (mutable INCREASE exp)
-    | (mutable DECREASE exp)
-    | (mutable SELFMULTIPLY exp)
-    | (mutable SELFDIVIDE exp)
-    | (mutable SELFMODULO exp)
-    | (mutable INCREMENT)
-    | (mutable DECREMENT)
+exp : mutable ASSIGN exp
+    | mutable INCREASE exp
+    | mutable DECREASE exp
+    | mutable SELFMULTIPLY exp
+    | mutable SELFDIVIDE exp
+    | mutable SELFMODULO exp
+    | mutable INCREMENT
+    | mutable DECREMENT
     | simpleExp;
 
-simpleExp : (simpleExp OR andExp) | andExp;
+simpleExp : simpleExp OR andExp
+          | andExp;
 
-andExp : (andExp AND unaryRelExp) | unaryRelExp;
+andExp : andExp AND unaryRelExp
+       | unaryRelExp;
 
-unaryRelExp : NOT unaryRelExp | relExp;
+unaryRelExp : NOT unaryRelExp
+            | relExp;
 
-relExp : sumExp relop sumExp | mulExp;
+relExp : sumExp relop sumExp
+       | sumExp;
 
-relop : LESS_EQUAL | GREATER_EQUAL | LESS | GREATER | EQUAL | NOT_EQUAL;
+relop : LESS_EQUAL
+      | GREATER_EQUAL
+      | LESS
+      | GREATER
+      | EQUAL
+      | NOT_EQUAL;
 
-sumExp : sumExp sumop mulExp | mulExp;
+sumExp : sumExp sumop mulExp
+       | mulExp;
 
-sumop : PLUS | MINUS;
+sumop : PLUS
+      | MINUS;
 
-mulExp : mulExp mulop unaryExp | unaryExp;
+mulExp : mulExp mulop unaryExp
+       | unaryExp;
 
-mulop : MULTIPLY | DIVIDE | MODULO;
+mulop : MULTIPLY
+      | DIVIDE
+      | MODULO;
 
 unaryExp : MINUS unaryExp | factor;
 
-factor : mutable | immutable;
+factor : mutable
+       | immutable;
 
 mutable : ID
-        | ID LSB INT RSB;
+        | ID LSB exp RSB;
 
 immutable : LRB exp RRB
           | call
