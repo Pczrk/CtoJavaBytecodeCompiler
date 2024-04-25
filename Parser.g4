@@ -13,7 +13,7 @@ scopedVarDecl : typeSpec varDeclList SEMICOLON;
 varDeclList : varDeclInit*;
 
 varDeclInit : varDeclId
-            | varDeclId COLON simpleExp;
+            | varDeclId ASSIGN simpleExp;
 
 varDeclId : ID
           | ID LSB NUMCONST RSB;

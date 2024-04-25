@@ -1,3 +1,6 @@
+bool b[5];
+
 int main(char argsV[]){
-     return 5;
+    int a = 5;
+    return 5;
 }
