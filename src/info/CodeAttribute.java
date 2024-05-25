@@ -71,8 +71,8 @@ public class CodeAttribute extends Attribute {
     }
 
     public void setStackLocalsSize(int stack, int locals){
-        maxStack = ByteBuffer.allocate(4).putInt(stack).array();
-        maxLocals = ByteBuffer.allocate(4).putInt(locals).array();
+        maxStack = ByteBuffer.allocate(2).putShort((short)stack).array();
+        maxLocals = ByteBuffer.allocate(2).putShort((short)locals).array();
 
     }
 

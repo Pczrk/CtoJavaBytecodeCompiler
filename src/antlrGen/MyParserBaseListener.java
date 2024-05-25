@@ -7,6 +7,8 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import simulation.Stack;
 
+import java.nio.ByteBuffer;
+
 /**
  * This class provides an empty implementation of {@link MyParserListener},
  * which can be extended to create a listener which only needs to handle a subset
@@ -16,7 +18,8 @@ import simulation.Stack;
 public class MyParserBaseListener implements MyParserListener {
 	ClassFile classFile = ClassFile.get();
 
-	Stack stack = new Stack();
+	Stack stack;
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -63,26 +66,31 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterVarSinDecl(MyParser.VarSinDeclContext ctx) {
-		if(ctx.parent instanceof MyParser.VarDeclContext){
-			FieldDescriptor fdesc = new FieldDescriptor(ctx.typeSpec().getText(), false);
-			for(MyParser.VarDeclInitContext init : ctx.varDeclList().varDeclInit()){
-				if(init.ASSIGN() != null){
-					try {
-						classFile.createGlobalVariableWithInit(fdesc.build(), init.varDeclId().ID().getText(), "10.0");//TODO value ma byc obliczane
-					}
-					catch(Exception ignored){}
-				}
-			}
-		}
-
-	}
+	@Override public void enterVarSinDecl(MyParser.VarSinDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitVarSinDecl(MyParser.VarSinDeclContext ctx) { }
+	@Override public void exitVarSinDecl(MyParser.VarSinDeclContext ctx) {
+		if(ctx.parent instanceof MyParser.VarDeclContext){
+			FieldDescriptor fdesc = new FieldDescriptor(ctx.typeSpec().getText(), false);
+			for(MyParser.VarDeclInitContext init : ctx.varDeclList().varDeclInit()){
+				if(init.ASSIGN() != null){
+					try {
+						classFile.createGlobalVariableWithInit(fdesc.build(), init.varDeclId().ID().getText(), stack);//TODO value ma byc obliczane
+					}
+					catch(Exception ignored){}
+				}
+				else{
+					try {
+						classFile.createGlobalVariable(fdesc.build(), init.varDeclId().ID().getText());
+					}
+					catch(Exception ignored){}
+				}
+			}
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -196,7 +204,11 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFunDecl(MyParser.FunDeclContext ctx) { }
+	@Override public void enterFunDecl(MyParser.FunDeclContext ctx) {
+		if(ctx.parent instanceof MyParser.VarDeclInitContext){
+			stack = new Stack(new String[0]);
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -436,13 +448,18 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSimpleExp(MyParser.SimpleExpContext ctx) { }
+	@Override public void enterSimpleExp(MyParser.SimpleExpContext ctx) {
+		if(ctx.parent instanceof MyParser.VarDeclInitContext){
+			stack = new Stack(new String[0]);
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSimpleExp(MyParser.SimpleExpContext ctx) { }
+	@Override public void exitSimpleExp(MyParser.SimpleExpContext ctx) {
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -730,7 +747,13 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntFactor(MyParser.IntFactorContext ctx) { }
+	@Override public void exitIntFactor(MyParser.IntFactorContext ctx) {
+		if(ctx.NUMCONST()!=null){
+			byte[] valueIndex = classFile.constantPoolInfo.addIntegerConstant(Integer.parseInt(ctx.NUMCONST().getText()));
+			stack.addCode(ByteBuffer.allocate(3).put((byte)0xb2).put(valueIndex).array());
+			stack.setStackSize(1);
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 *
