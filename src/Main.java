@@ -1,18 +1,32 @@
+import antlrGen.MyParserBaseListener;
+import antlrGen.MyParserListener;
 import descriptor.FieldDescriptor;
 import descriptor.MethodDescriptor;
+import antlrGen.MyLexer;
+import antlrGen.MyParser;
+import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import java.io.IOException;
 
 public class Main {
+
     public static void main(String[] args) throws Exception {
-        var emptyProgram = new ClassFile();
-        emptyProgram.methods.get("main").codeAttribute.addEmptyReturn();
-        //emptyProgram.generateClassFile(); // mozesz sobie wytestowac ze to dziala i to nizej tez
+        try {
+            MyLexer lexer = new MyLexer(new ANTLRFileStream("data/program.c"));
+            TokenStream tokens = new CommonTokenStream(lexer);
 
-        var xd = new MethodDescriptor();
-        xd.getParamDescriptor().addArray().addArray().addArray().addBoolean();
-        xd.getReturnDesc().addArray().addChar();
-        System.out.print(xd.build());
+            MyParser parser = new MyParser(tokens);
 
-        emptyProgram.createGlobalVariable(new FieldDescriptor().addArray().addBoolean().build(),"aha",new String[0]);
-        emptyProgram.generateClassFile();
+            MyParser.ProgramContext myContext = parser.program();;
+
+            ParseTreeWalker walker = new ParseTreeWalker();
+            MyParserListener listener = new MyParserBaseListener();
+            walker.walk(listener, myContext);
+        }
+        catch(IOException ignored){}
     }
 }

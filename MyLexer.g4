@@ -1,4 +1,4 @@
-lexer grammar Lexer;
+lexer grammar MyLexer;
 
 // KEYWORDS:
 FOR             : 'for';
@@ -48,7 +48,7 @@ BOOL            : 'bool';
 ID              : [a-zA-Z_][a-zA-Z0-9_]*;
 
 // CONSTANT:
-FLOATCONST	: [0-9]*'\.'[0-9]*;
+FLOATCONST	: [0-9]*'.'[0-9]*;
 NUMCONST        : [0-9]+;
 CHARCONST       : '\''[a-zA-Z]'\'';
 STRINGCONST     : '"'[a-zA-Z]+'"';
