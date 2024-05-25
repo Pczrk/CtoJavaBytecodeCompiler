@@ -15,7 +15,6 @@ INCREASE        : '+=';
 DECREASE        : '-=';
 SELFMULTIPLY    : '*=';
 SELFDIVIDE      : '/=';
-SELFMODULO      : '%=';
 EQUAL           : '==';
 NOT_EQUAL       : '!=';
 LESS            : '<';
@@ -26,11 +25,9 @@ PLUS            : '+';
 MINUS           : '-';
 MULTIPLY        : '*';
 DIVIDE          : '/';
-MODULO          : '%';
 COLON           : ':';
 SEMICOLON       : ';';
-INCREMENT       : '++';
-DECREMENT       : '--';
+COMA       	: ',';
 
 // BRACKETS:
 LRB             : '(';
@@ -42,6 +39,7 @@ RSB             : ']';
 
 // TYPES:
 VOID            : 'void';
+FLOAT            : 'float';
 INT             : 'int';
 CHAR            : 'char';
 BOOL            : 'bool';
@@ -50,6 +48,7 @@ BOOL            : 'bool';
 ID              : [a-zA-Z_][a-zA-Z0-9_]*;
 
 // CONSTANT:
+FLOATCONST	: [0-9]*'\.'[0-9]*;
 NUMCONST        : [0-9]+;
 CHARCONST       : '\''[a-zA-Z]'\'';
 STRINGCONST     : '"'[a-zA-Z]+'"';
