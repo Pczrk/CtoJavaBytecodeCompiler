@@ -4,6 +4,7 @@ import info.*;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,12 +90,12 @@ public class ClassFile {
     }
 
     //it's true for C but for bytecode it's static field
-    public void createGlobalVariable(String type, String name, String[] arguments) throws Exception {
+    public void createGlobalVariable(String type, String name) throws Exception {
         if (!methods.containsKey("<clinit>")){
             createMethod(new byte[]{(byte) 0x00, (byte) 0x08},"<clinit>","()V",new String[0]);
         }
         var code = methods.get("<clinit>");
-        var utf8NameIndex = constantPoolInfo.addOrGetUtf8Constant(type);
+        var utf8NameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
         var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(type);
 
         var nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(utf8NameIndex,utf8TypeIndex);
@@ -109,6 +110,77 @@ public class ClassFile {
 //            var utf8ArgumentIndex = utf8ConstantIndex.get(type);
 //        }
     }
+
+    public void createGlobalVariableWithInit(String type, String name, String value) throws Exception {
+        if (!methods.containsKey("<clinit>")){
+            createMethod(new byte[]{(byte) 0x00, (byte) 0x08},"<clinit>","()V",new String[0]);
+        }
+        var staticConstCode = methods.get("<clinit>");
+        var utf8NameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
+        var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(type);
+
+        var nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(utf8NameIndex,utf8TypeIndex);
+        var fieldRefIndex = constantPoolInfo.addFieldReferenceConstant(thisClass,nameAndTypeIndex);
+        if (fieldReferencesIndex.containsKey(name))
+            throw new Exception("Variable with this name already defined"); //TODO lazy error, w C jest shadowing zmiennych, ale to na koncu jesli wogole :D :P :O
+        fieldReferencesIndex.put(name, fieldRefIndex);
+
+        switch (type) {
+            case "I" -> {
+                var valueIndex = constantPoolInfo.addIntegerConstant(Integer.parseInt(value));
+                staticConstCode.codeAttribute.addCode(ByteBuffer.allocate(3).put((byte) 0x12).put(valueIndex).array());
+                staticConstCode.codeAttribute.addCode(ByteBuffer.allocate(3).put((byte) 0xb3).put(fieldRefIndex).array());
+                staticConstCode.codeAttribute.setStackLocalsSize(1, 0);
+            }
+            case "F" -> {
+                var valueIndex = constantPoolInfo.addFloatConstant(Float.parseFloat(value));
+                staticConstCode.codeAttribute.addCode(ByteBuffer.allocate(3).put((byte) 0x12).put(valueIndex).array());
+                staticConstCode.codeAttribute.addCode(ByteBuffer.allocate(3).put((byte) 0xb3).put(fieldRefIndex).array());
+                staticConstCode.codeAttribute.setStackLocalsSize(1, 0);
+            }
+            case "B" -> {
+                var value2 = value.equals("true") ? (byte) 0x01 : (byte) 0x00;
+                staticConstCode.codeAttribute.addCode(ByteBuffer.allocate(2).put((byte) 0x10).put(value2).array());
+                staticConstCode.codeAttribute.addCode(ByteBuffer.allocate(3).put((byte) 0xb3).put(fieldRefIndex).array());
+                staticConstCode.codeAttribute.setStackLocalsSize(1, 0);
+            }
+            case "C" -> {
+                var value2 = (byte) value.charAt(0);
+                staticConstCode.codeAttribute.addCode(ByteBuffer.allocate(2).put((byte) 0x10).put(value2).array());
+                staticConstCode.codeAttribute.addCode(ByteBuffer.allocate(3).put((byte) 0xb3).put(fieldRefIndex).array());
+                staticConstCode.codeAttribute.setStackLocalsSize(1, 0);
+            }
+        }
+        staticConstCode.codeAttribute.addCode(new byte[]{(byte) 0xb1});
+
+//        for (var arg : arguments) { TODO TUTAJ INICJOWANIE ZMIENNYCH
+//            if (!utf8ConstantIndex.containsKey(arg))
+//                utf8ConstantIndex.put(type, constantPoolInfo.addUtf8Constant(type));
+//            var utf8ArgumentIndex = utf8ConstantIndex.get(type);
+//        }
+    }
+
+    public void createGlobalArrayWithInit(String type, String name, String[] values) throws Exception {
+        if (!methods.containsKey("<clinit>")){
+            createMethod(new byte[]{(byte) 0x00, (byte) 0x08},"<clinit>","()V",new String[0]);
+        }
+        var code = methods.get("<clinit>");
+        var utf8NameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
+        var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(type);
+
+        var nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(utf8NameIndex,utf8TypeIndex);
+        var fieldRefIndex = constantPoolInfo.addFieldReferenceConstant(thisClass,nameAndTypeIndex);
+        if (fieldReferencesIndex.containsKey(name))
+            throw new Exception("Variable with this name already defined"); //TODO lazy error, w C jest shadowing zmiennych, ale to na koncu jesli wogole :D :P :O
+        fieldReferencesIndex.put(name, fieldRefIndex);
+
+//        for (var arg : arguments) { TODO TUTAJ INICJOWANIE ZMIENNYCH
+//            if (!utf8ConstantIndex.containsKey(arg))
+//                utf8ConstantIndex.put(type, constantPoolInfo.addUtf8Constant(type));
+//            var utf8ArgumentIndex = utf8ConstantIndex.get(type);
+//        }
+    }
+
     //TODO Tutaj jest "krotki" import printa, musisz go gdzies wywolac
     public void addPrint(){
         if (methodReferencesIndex.containsKey("print"))

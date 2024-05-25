@@ -1,8 +1,27 @@
 package descriptor;
 
+import info.Field;
+
 public class FieldDescriptor {
     protected String description = "";
     protected boolean finished = false;
+
+    public FieldDescriptor(){}
+
+    public FieldDescriptor(String initType, boolean array){
+        if(array){
+            description = "[";
+        }
+        switch (initType) {
+            case "int" -> description = "I";
+            case "bool" -> description = "B";
+            case "char" -> description = "C";
+            case "float" -> description = "F";
+        }
+        finished = true;
+        return;
+    }
+
     public FieldDescriptor addChar() throws Exception {
         if (finished)
             throw new Exception("");
@@ -39,7 +58,7 @@ public class FieldDescriptor {
     public FieldDescriptor addBoolean() throws Exception {
         if (finished)
             throw new Exception("");
-        description += "Z";
+        description += "B";
         finished = true;
         return this;
     }

@@ -63,6 +63,19 @@ public class CodeAttribute extends Attribute {
         return buffer.array();
     }
 
+    public void addCode(byte[] newCode){
+        var bytesLength = code.length + newCode.length;
+        ByteBuffer buffer = ByteBuffer.allocate(bytesLength);
+        buffer.put(code).put(newCode);
+        code = buffer.array();
+    }
+
+    public void setStackLocalsSize(int stack, int locals){
+        maxStack = ByteBuffer.allocate(4).putInt(stack).array();
+        maxLocals = ByteBuffer.allocate(4).putInt(locals).array();
+
+    }
+
     public void addEmptyReturn() {
         code = ByteBuffer.allocate(code.length + 1).put(code).put((byte) 0xb1).array();
     }

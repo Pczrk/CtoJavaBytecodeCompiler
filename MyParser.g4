@@ -6,220 +6,67 @@ program : decl*;
 decl : varDecl
      | funDecl;
 
-varDecl : boolDecl | intDecl | charDecl | floatDecl | boolArrDecl | intArrDecl | charArrDecl | floatArrDecl;
+varDecl : varSinDecl | varArrDecl;
 
-boolDecl : BOOL boolVarDeclList SEMICOLON;
-intDecl : INT intVarDeclList SEMICOLON;
-charDecl : CHAR charVarDeclList SEMICOLON;
-floatDecl : FLOAT floatVarDeclList SEMICOLON;
+varSinDecl : typeSpec varDeclList SEMICOLON;
 
-boolArrDecl : BOOL boolArrDeclList SEMICOLON;
-intArrDecl : INT intArrDeclList SEMICOLON;
-charArrDecl : CHAR charArrDeclList SEMICOLON;
-floatArrDecl : FLOAT floatArrDeclList SEMICOLON;
+varArrDecl : typeSpec arrDeclList SEMICOLON;
 
-scopedVarDecl : boolDecl | intDecl | charDecl | floatDecl | boolArrDecl | intArrDecl | charArrDecl | floatArrDecl;
+typeSpec : INT | BOOL | FLOAT | CHAR;
 
-boolVarDeclList : boolVarDeclInit (COMA boolVarDeclInit)*;
-intVarDeclList : intVarDeclInit (COMA intVarDeclInit)*;
-charVarDeclList : charVarDeclInit (COMA charVarDeclInit)*;
-floatVarDeclList : floatVarDeclInit (COMA floatVarDeclInit)*;
+scopedVarDecl : varSinDecl | varArrDecl;
 
-boolArrDeclList : boolArrDeclInit (COMA boolArrDeclInit)*;
-intArrDeclList : intArrDeclInit (COMA intArrDeclInit)*;
-charArrDeclList : charArrDeclInit (COMA charArrDeclInit)*;
-floatArrDeclList : floatArrDeclInit (COMA floatArrDeclInit)*;
+varDeclList : varDeclInit (COMA varDeclInit)*;
 
-boolVarDeclInit : varDeclId
-            | varDeclId ASSIGN boolSimpleExp;
-intVarDeclInit : varDeclId
-            | varDeclId ASSIGN intSimpleExp;
-charVarDeclInit : varDeclId
-            | varDeclId ASSIGN charSimpleExp;
-floatVarDeclInit : varDeclId
-            | varDeclId ASSIGN floatSimpleExp;
+arrDeclList : arrDeclInit (COMA arrDeclInit)*;
 
-boolArrDeclInit : arrDeclId
-	    | arrDeclId ASSIGN LCB boolSimpleExp (COMA boolSimpleExp)* RCB;
-intArrDeclInit : arrDeclId
-	    | arrDeclId ASSIGN LCB intSimpleExp (COMA intSimpleExp)* RCB;
-charArrDeclInit : arrDeclId
-	    | arrDeclId ASSIGN LCB charSimpleExp (COMA charSimpleExp)* RCB;
-floatArrDeclInit : arrDeclId
-	    | arrDeclId ASSIGN LCB floatSimpleExp (COMA floatSimpleExp)* RCB;
+varDeclInit : varDeclId
+            | varDeclId ASSIGN simpleExp;
 
+arrDeclInit : arrDeclId
+	    | arrDeclId ASSIGN LCB simpleExp (COMA simpleExp)* RCB;
 
 varDeclId : ID;
 
 arrDeclId : ID LSB intSimpleExp RSB;
 
-funDecl : boolFunDecl | intFunDecl | charFunDecl | floatFunDecl | boolArrFunDecl | intArrFunDecl | charArrFunDecl | floatArrFunDecl | voidFunDecl;
+funDecl : nonVoidFunDecl | voidFunDecl;
 
-boolFunDecl : BOOL ID LRB params RRB boolRStmt;
-intFunDecl : INT ID LRB params RRB intRStmt;
-charFunDecl : CHAR ID LRB params RRB charRStmt;
-floatFunDecl : FLOAT ID LRB params RRB floatRStmt;
+nonVoidFunDecl : sinVoidFunDecl | arrVoidFunDecl;
 
-boolArrFunDecl : BOOL ID LRB params RRB boolArrRStmt;
-intArrFunDecl : INT ID LRB params RRB intArrRStmt;
-charArrFunDecl : CHAR ID LRB params RRB charArrRStmt;
-floatArrFunDecl : FLOAT ID LRB params RRB floatArrRStmt;
+sinVoidFunDecl : typeSpec ID LRB params RRB nonVoidRStmt;
+
+arrVoidFunDecl : typeSpec LSB RSB ID LRB params RRB nonVoidRStmt;
 
 voidFunDecl : VOID ID LRB params RRB voidRStmt;
 
 params : param*;
 
-param : boolParam | intParam | charParam | floatParam | boolArrParam | intArrParam | charArrParam | floatArrParam;
+param : sinParam | arrParam;
 
-boolParam : BOOL ID;
-intParam : INT ID;
-charParam : CHAR ID;
-floatParam : FLOAT ID;
-boolArrParam : BOOL ID LSB RSB;
-intArrParam : INT ID LSB RSB;
-charArrParam : CHAR ID LSB RSB;
-floatArrParam : FLOAT ID LSB RSB;
+sinParam : typeSpec ID;
 
-boolRStmt : boolReturnStmt | boolRCompoundStmt;
+arrParam : typeSpec ID LSB RSB ;
 
-boolRCompoundStmt : LCB (scopedVarDecl | boolStmt)* boolReturnStmt RCB;
+
+nonVoidRStmt : nonVoidReturnStmt | nonVoidRCompoundStmt;
+
+nonVoidRCompoundStmt : LCB (scopedVarDecl | stmt)* nonVoidReturnStmt RCB;
  
-boolStmt : boolReturnStmt | boolCompoundStmt | boolSelectStmt | boolIterStmt | expStmt;
+stmt : nonVoidReturnStmt | compoundStmt | selectStmt | iterStmt | expStmt;
 
-boolReturnStmt : RETURN boolSimpleExp SEMICOLON;
+nonVoidReturnStmt : RETURN simpleExp SEMICOLON;
 
-boolCompoundStmt : LCB (scopedVarDecl | boolStmt)* RCB;
-boolSelectStmt : IF LRB boolSimpleExp RRB boolStmt
-	       | IF LRB boolSimpleExp RRB boolStmt ELSE boolStmt;
-boolIterStmt : WHILE LRB boolSimpleExp RRB boolStmt
-	     | FOR LRB scopedVarDecl boolExpStmt exp RRB boolStmt;
+compoundStmt : LCB (scopedVarDecl | stmt)* RCB;
+selectStmt : IF LRB boolSimpleExp RRB stmt
+	       | IF LRB boolSimpleExp RRB stmt ELSE stmt;
+iterStmt : WHILE LRB boolSimpleExp RRB stmt
+	     | FOR LRB scopedVarDecl boolExpStmt exp RRB stmt;
 
 
-
-intRStmt : intReturnStmt | intRCompoundStmt;
-
-intRCompoundStmt : LCB (scopedVarDecl | intStmt)* intReturnStmt RCB;
+voidRStmt : voidReturnStmt | compoundStmt;
  
-intStmt : intReturnStmt | intCompoundStmt | intSelectStmt | intIterStmt | expStmt;
-
-intReturnStmt : RETURN intSimpleExp SEMICOLON;
-
-intCompoundStmt : LCB (scopedVarDecl | intStmt)* RCB;
-intSelectStmt : IF LRB boolSimpleExp RRB intStmt
-	       | IF LRB boolSimpleExp RRB intStmt ELSE intStmt;
-intIterStmt : WHILE LRB boolSimpleExp RRB intStmt
-	     | FOR LRB scopedVarDecl boolExpStmt exp RRB intStmt;
-
-
-
-charRStmt : charReturnStmt | charRCompoundStmt;
-
-charRCompoundStmt : LCB (scopedVarDecl | charStmt)* charReturnStmt RCB;
- 
-charStmt : charReturnStmt | charCompoundStmt | charSelectStmt | charIterStmt | expStmt;
-
-charReturnStmt : RETURN charSimpleExp SEMICOLON;
-
-charCompoundStmt : LCB (scopedVarDecl | charStmt)* RCB;
-charSelectStmt : IF LRB boolSimpleExp RRB charStmt
-	       | IF LRB boolSimpleExp RRB charStmt ELSE charStmt;
-charIterStmt : WHILE LRB boolSimpleExp RRB charStmt
-	     | FOR LRB scopedVarDecl boolExpStmt exp RRB charStmt;
-
-
-
-floatRStmt : floatReturnStmt | floatRCompoundStmt;
-
-floatRCompoundStmt : LCB (scopedVarDecl | floatStmt)* floatReturnStmt RCB;
- 
-floatStmt : floatReturnStmt | floatCompoundStmt | floatSelectStmt | floatIterStmt | expStmt;
-
-floatReturnStmt : RETURN floatSimpleExp SEMICOLON;
-
-floatCompoundStmt : LCB (scopedVarDecl | floatStmt)* RCB;
-floatSelectStmt : IF LRB boolSimpleExp RRB floatStmt
-	       | IF LRB boolSimpleExp RRB floatStmt ELSE floatStmt;
-floatIterStmt : WHILE LRB boolSimpleExp RRB floatStmt
-	     | FOR LRB scopedVarDecl boolExpStmt exp RRB floatStmt;
-
-
-
-boolArrRStmt : boolArrReturnStmt | boolArrRCompoundStmt;
-
-boolArrRCompoundStmt : LCB (scopedVarDecl | boolArrStmt)* boolArrReturnStmt RCB;
- 
-boolArrStmt : boolArrReturnStmt | boolArrCompoundStmt | boolArrSelectStmt | boolArrIterStmt | expStmt;
-
-boolArrReturnStmt : RETURN boolArrSimpleExp SEMICOLON;
-
-boolArrCompoundStmt : LCB (scopedVarDecl | boolArrStmt)* RCB;
-boolArrSelectStmt : IF LRB boolSimpleExp RRB boolArrStmt
-	       | IF LRB boolSimpleExp RRB boolArrStmt ELSE boolArrStmt;
-boolArrIterStmt : WHILE LRB boolSimpleExp RRB boolArrStmt
-	     | FOR LRB scopedVarDecl boolExpStmt exp RRB boolArrStmt;
-
-
-
-intArrRStmt : intArrReturnStmt | intArrRCompoundStmt;
-
-intArrRCompoundStmt : LCB (scopedVarDecl | intArrStmt)* intArrReturnStmt RCB;
- 
-intArrStmt : intArrReturnStmt | intArrCompoundStmt | intArrSelectStmt | intArrIterStmt | expStmt;
-
-intArrReturnStmt : RETURN intArrSimpleExp SEMICOLON;
-
-intArrCompoundStmt : LCB (scopedVarDecl | intArrStmt)* RCB;
-intArrSelectStmt : IF LRB boolSimpleExp RRB intArrStmt
-	       | IF LRB boolSimpleExp RRB intArrStmt ELSE intArrStmt;
-intArrIterStmt : WHILE LRB boolSimpleExp RRB intArrStmt
-	     | FOR LRB scopedVarDecl boolExpStmt exp RRB intArrStmt;
-
-
-
-charArrRStmt : charArrReturnStmt | charArrRCompoundStmt;
-
-charArrRCompoundStmt : LCB (scopedVarDecl | charArrStmt)* charArrReturnStmt RCB;
- 
-charArrStmt : charArrReturnStmt | charArrCompoundStmt | charArrSelectStmt | charArrIterStmt | expStmt;
-
-charArrReturnStmt : RETURN charArrSimpleExp SEMICOLON;
-
-charArrCompoundStmt : LCB (scopedVarDecl | charArrStmt)* RCB;
-charArrSelectStmt : IF LRB boolSimpleExp RRB charArrStmt
-	       | IF LRB boolSimpleExp RRB charArrStmt ELSE charArrStmt;
-charArrIterStmt : WHILE LRB boolSimpleExp RRB charArrStmt
-	     | FOR LRB scopedVarDecl boolExpStmt exp RRB charArrStmt;
-
-
-
-floatArrRStmt : floatArrReturnStmt | floatArrRCompoundStmt;
-
-floatArrRCompoundStmt : LCB (scopedVarDecl | floatArrStmt)* floatArrReturnStmt RCB;
- 
-floatArrStmt : floatArrReturnStmt | floatArrCompoundStmt | floatArrSelectStmt | floatArrIterStmt | expStmt;
-
-floatArrReturnStmt : RETURN floatArrSimpleExp SEMICOLON;
-
-floatArrCompoundStmt : LCB (scopedVarDecl | floatArrStmt)* RCB;
-floatArrSelectStmt : IF LRB boolSimpleExp RRB floatArrStmt
-	       | IF LRB boolSimpleExp RRB floatArrStmt ELSE floatArrStmt;
-floatArrIterStmt : WHILE LRB boolSimpleExp RRB floatArrStmt
-	     | FOR LRB scopedVarDecl boolExpStmt exp RRB floatArrStmt;
-
-
-
-voidRStmt : voidReturnStmt | voidCompoundStmt;
- 
-voidStmt : voidReturnStmt | voidCompoundStmt | voidSelectStmt | voidIterStmt | expStmt;
-
 voidReturnStmt : RETURN SEMICOLON;
-
-voidCompoundStmt : LCB (scopedVarDecl | voidStmt)* RCB;
-voidSelectStmt : IF LRB boolSimpleExp RRB voidStmt
-	       | IF LRB boolSimpleExp RRB voidStmt ELSE voidStmt;
-voidIterStmt : WHILE LRB boolSimpleExp RRB voidStmt
-	     | FOR LRB scopedVarDecl boolExpStmt exp RRB voidStmt;
-
 
 
 expStmt : boolExpStmt | intExpStmt | charExpStmt | floatExpStmt | boolArrExpStmt | intArrExpStmt | charArrExpStmt | floatArrExpStmt | SEMICOLON;
@@ -324,7 +171,7 @@ floatMulExp : floatMulExp mulop floatUnaryExp
 floatUnaryExp : MINUS floatUnaryExp | floatFactor;
 
 floatFactor : LRB floatSimpleExp RRB
-	| FLOAT
+	| FLOATCONST
 	| call
 	| ID
 	| ID LSB intSimpleExp RSB
