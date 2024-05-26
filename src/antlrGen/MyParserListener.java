@@ -1,4 +1,4 @@
-package antlrGen;// Generated from MyParser.g4 by ANTLR 4.13.1
+package antlrGen;
 // Generated from MyParser.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -358,75 +358,35 @@ public interface MyParserListener extends ParseTreeListener {
 	 */
 	void exitBoolExpStmt(MyParser.BoolExpStmtContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#intExpStmt}.
+	 * Enter a parse tree produced by {@link MyParser#numExpStmt}.
 	 * @param ctx the parse tree
 	 */
-	void enterIntExpStmt(MyParser.IntExpStmtContext ctx);
+	void enterNumExpStmt(MyParser.NumExpStmtContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MyParser#intExpStmt}.
+	 * Exit a parse tree produced by {@link MyParser#numExpStmt}.
 	 * @param ctx the parse tree
 	 */
-	void exitIntExpStmt(MyParser.IntExpStmtContext ctx);
+	void exitNumExpStmt(MyParser.NumExpStmtContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#charExpStmt}.
+	 * Enter a parse tree produced by {@link MyParser#assignExpStmt}.
 	 * @param ctx the parse tree
 	 */
-	void enterCharExpStmt(MyParser.CharExpStmtContext ctx);
+	void enterAssignExpStmt(MyParser.AssignExpStmtContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MyParser#charExpStmt}.
+	 * Exit a parse tree produced by {@link MyParser#assignExpStmt}.
 	 * @param ctx the parse tree
 	 */
-	void exitCharExpStmt(MyParser.CharExpStmtContext ctx);
+	void exitAssignExpStmt(MyParser.AssignExpStmtContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#floatExpStmt}.
+	 * Enter a parse tree produced by {@link MyParser#printf}.
 	 * @param ctx the parse tree
 	 */
-	void enterFloatExpStmt(MyParser.FloatExpStmtContext ctx);
+	void enterPrintf(MyParser.PrintfContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MyParser#floatExpStmt}.
+	 * Exit a parse tree produced by {@link MyParser#printf}.
 	 * @param ctx the parse tree
 	 */
-	void exitFloatExpStmt(MyParser.FloatExpStmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#boolArrExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterBoolArrExpStmt(MyParser.BoolArrExpStmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#boolArrExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitBoolArrExpStmt(MyParser.BoolArrExpStmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#intArrExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterIntArrExpStmt(MyParser.IntArrExpStmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#intArrExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitIntArrExpStmt(MyParser.IntArrExpStmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#charArrExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterCharArrExpStmt(MyParser.CharArrExpStmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#charArrExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitCharArrExpStmt(MyParser.CharArrExpStmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#floatArrExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterFloatArrExpStmt(MyParser.FloatArrExpStmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#floatArrExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitFloatArrExpStmt(MyParser.FloatArrExpStmtContext ctx);
+	void exitPrintf(MyParser.PrintfContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MyParser#boolExp}.
 	 * @param ctx the parse tree
@@ -518,25 +478,25 @@ public interface MyParserListener extends ParseTreeListener {
 	 */
 	void exitBrelop(MyParser.BrelopContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#intExp}.
+	 * Enter a parse tree produced by {@link MyParser#numExp}.
 	 * @param ctx the parse tree
 	 */
-	void enterIntExp(MyParser.IntExpContext ctx);
+	void enterNumExp(MyParser.NumExpContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MyParser#intExp}.
+	 * Exit a parse tree produced by {@link MyParser#numExp}.
 	 * @param ctx the parse tree
 	 */
-	void exitIntExp(MyParser.IntExpContext ctx);
+	void exitNumExp(MyParser.NumExpContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#intSimpleExp}.
+	 * Enter a parse tree produced by {@link MyParser#numSimpleExp}.
 	 * @param ctx the parse tree
 	 */
-	void enterIntSimpleExp(MyParser.IntSimpleExpContext ctx);
+	void enterNumSimpleExp(MyParser.NumSimpleExpContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MyParser#intSimpleExp}.
+	 * Exit a parse tree produced by {@link MyParser#numSimpleExp}.
 	 * @param ctx the parse tree
 	 */
-	void exitIntSimpleExp(MyParser.IntSimpleExpContext ctx);
+	void exitNumSimpleExp(MyParser.NumSimpleExpContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MyParser#sumop}.
 	 * @param ctx the parse tree
@@ -548,15 +508,15 @@ public interface MyParserListener extends ParseTreeListener {
 	 */
 	void exitSumop(MyParser.SumopContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#intMulExp}.
+	 * Enter a parse tree produced by {@link MyParser#numMulExp}.
 	 * @param ctx the parse tree
 	 */
-	void enterIntMulExp(MyParser.IntMulExpContext ctx);
+	void enterNumMulExp(MyParser.NumMulExpContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MyParser#intMulExp}.
+	 * Exit a parse tree produced by {@link MyParser#numMulExp}.
 	 * @param ctx the parse tree
 	 */
-	void exitIntMulExp(MyParser.IntMulExpContext ctx);
+	void exitNumMulExp(MyParser.NumMulExpContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MyParser#mulop}.
 	 * @param ctx the parse tree
@@ -568,25 +528,25 @@ public interface MyParserListener extends ParseTreeListener {
 	 */
 	void exitMulop(MyParser.MulopContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#intUnaryExp}.
+	 * Enter a parse tree produced by {@link MyParser#numUnaryExp}.
 	 * @param ctx the parse tree
 	 */
-	void enterIntUnaryExp(MyParser.IntUnaryExpContext ctx);
+	void enterNumUnaryExp(MyParser.NumUnaryExpContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MyParser#intUnaryExp}.
+	 * Exit a parse tree produced by {@link MyParser#numUnaryExp}.
 	 * @param ctx the parse tree
 	 */
-	void exitIntUnaryExp(MyParser.IntUnaryExpContext ctx);
+	void exitNumUnaryExp(MyParser.NumUnaryExpContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#intFactor}.
+	 * Enter a parse tree produced by {@link MyParser#numFactor}.
 	 * @param ctx the parse tree
 	 */
-	void enterIntFactor(MyParser.IntFactorContext ctx);
+	void enterNumFactor(MyParser.NumFactorContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MyParser#intFactor}.
+	 * Exit a parse tree produced by {@link MyParser#numFactor}.
 	 * @param ctx the parse tree
 	 */
-	void exitIntFactor(MyParser.IntFactorContext ctx);
+	void exitNumFactor(MyParser.NumFactorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MyParser#call}.
 	 * @param ctx the parse tree
@@ -618,66 +578,6 @@ public interface MyParserListener extends ParseTreeListener {
 	 */
 	void exitMutable(MyParser.MutableContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#floatExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterFloatExp(MyParser.FloatExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#floatExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitFloatExp(MyParser.FloatExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#floatSimpleExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterFloatSimpleExp(MyParser.FloatSimpleExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#floatSimpleExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitFloatSimpleExp(MyParser.FloatSimpleExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#floatMulExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterFloatMulExp(MyParser.FloatMulExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#floatMulExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitFloatMulExp(MyParser.FloatMulExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#floatUnaryExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterFloatUnaryExp(MyParser.FloatUnaryExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#floatUnaryExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitFloatUnaryExp(MyParser.FloatUnaryExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#floatFactor}.
-	 * @param ctx the parse tree
-	 */
-	void enterFloatFactor(MyParser.FloatFactorContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#floatFactor}.
-	 * @param ctx the parse tree
-	 */
-	void exitFloatFactor(MyParser.FloatFactorContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#charExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterCharExp(MyParser.CharExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#charExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitCharExp(MyParser.CharExpContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MyParser#charSimpleExp}.
 	 * @param ctx the parse tree
 	 */
@@ -688,83 +588,13 @@ public interface MyParserListener extends ParseTreeListener {
 	 */
 	void exitCharSimpleExp(MyParser.CharSimpleExpContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#boolArrExp}.
+	 * Enter a parse tree produced by {@link MyParser#assignExp}.
 	 * @param ctx the parse tree
 	 */
-	void enterBoolArrExp(MyParser.BoolArrExpContext ctx);
+	void enterAssignExp(MyParser.AssignExpContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MyParser#boolArrExp}.
+	 * Exit a parse tree produced by {@link MyParser#assignExp}.
 	 * @param ctx the parse tree
 	 */
-	void exitBoolArrExp(MyParser.BoolArrExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#boolArrSimpleExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterBoolArrSimpleExp(MyParser.BoolArrSimpleExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#boolArrSimpleExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitBoolArrSimpleExp(MyParser.BoolArrSimpleExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#intArrExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterIntArrExp(MyParser.IntArrExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#intArrExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitIntArrExp(MyParser.IntArrExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#intArrSimpleExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterIntArrSimpleExp(MyParser.IntArrSimpleExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#intArrSimpleExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitIntArrSimpleExp(MyParser.IntArrSimpleExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#charArrExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterCharArrExp(MyParser.CharArrExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#charArrExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitCharArrExp(MyParser.CharArrExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#charArrSimpleExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterCharArrSimpleExp(MyParser.CharArrSimpleExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#charArrSimpleExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitCharArrSimpleExp(MyParser.CharArrSimpleExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#floatArrExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterFloatArrExp(MyParser.FloatArrExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#floatArrExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitFloatArrExp(MyParser.FloatArrExpContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#floatArrSimpleExp}.
-	 * @param ctx the parse tree
-	 */
-	void enterFloatArrSimpleExp(MyParser.FloatArrSimpleExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#floatArrSimpleExp}.
-	 * @param ctx the parse tree
-	 */
-	void exitFloatArrSimpleExp(MyParser.FloatArrSimpleExpContext ctx);
+	void exitAssignExp(MyParser.AssignExpContext ctx);
 }

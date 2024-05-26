@@ -1,13 +1,20 @@
 package classFile;
+import descriptor.FieldDescriptor;
+import descriptor.MethodDescriptor;
 import info.*;
 
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import info.Variable;
+import org.antlr.v4.runtime.misc.Pair;
 import simulation.Stack;
+import info.Method2;
 
 // https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7
 public class ClassFile {
@@ -18,7 +25,9 @@ public class ClassFile {
             try{
                 classFile = new ClassFile();
             }
-            catch(Exception ignored){}
+            catch(Exception e){
+                System.out.println(e.getMessage());
+            }
         }
         return classFile;
     }
@@ -36,8 +45,8 @@ public class ClassFile {
     MethodInfo methodInfo = new MethodInfo();
     AttributeInfo attributeInfo = new AttributeInfo();
     // helper fields
-    Map<String,byte[]> methodReferencesIndex = new HashMap<>();
-    Map<String,byte[]> fieldReferencesIndex = new HashMap<>();
+    Map<String, Pair<byte[], Method2>> methodReferencesIndex = new HashMap<>();
+    Map<String,Variable> fieldReferencesIndex = new HashMap<>();
     Map<String, Method> methods = new HashMap<>();
     public ClassFile() throws Exception {
         createThisAndSuperClass();
@@ -54,7 +63,7 @@ public class ClassFile {
 
     private void createDefaultConstructor() throws Exception {
         var code = createMethod(new byte[]{(byte) 0x00, (byte) 0x01},"<init>","()V", new String[0]);
-        code.makeDefaultConstructor(methodReferencesIndex.get("<init>"));
+        code.makeDefaultConstructor(methodReferencesIndex.get("<init>").a);
     }
 
     private void createEntryPoint(){
@@ -66,6 +75,27 @@ public class ClassFile {
         method.codeAttribute.entryPointInit();
     }
 
+    public CodeAttribute createMethod(byte[] accessFlags, String name, Method2 method2, String[] argumentsNames) throws Exception {
+        if (methods.containsKey(name))
+            throw new Exception("In C there is no polymorphism, so 2 methods can't have same name");
+
+        byte[] nameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
+        byte[] argumentsIndex = constantPoolInfo.addOrGetUtf8Constant(MethodDescriptor.fromMethod2(method2).build());
+        byte[] nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(nameIndex,argumentsIndex);
+        methodReferencesIndex.put(name,new Pair<>(constantPoolInfo.addMethodReferenceConstant(superClass, nameAndTypeIndex),
+                method2));
+
+        var method = methodInfo.addMethod(accessFlags,nameIndex,argumentsIndex,new AttributeInfo());
+        methods.put(name,method);
+
+        for (var argName : argumentsNames){
+            constantPoolInfo.addOrGetUtf8Constant(argName);
+        }
+
+        method.addCodeAttribute(constantPoolInfo.addOrGetUtf8Constant("Code"));
+        return method.codeAttribute;
+    }
+
     public CodeAttribute createMethod(byte[] accessFlags, String name, String arguments, String[] argumentsNames) throws Exception {
         if (methods.containsKey(name))
             throw new Exception("In C there is no polymorphism, so 2 methods can't have same name");
@@ -73,7 +103,8 @@ public class ClassFile {
         byte[] nameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
         byte[] argumentsIndex = constantPoolInfo.addOrGetUtf8Constant(arguments);
         byte[] nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(nameIndex,argumentsIndex);
-        methodReferencesIndex.put(name,constantPoolInfo.addMethodReferenceConstant(superClass, nameAndTypeIndex));
+        //methodReferencesIndex.put(name,new Pair<>(constantPoolInfo.addMethodReferenceConstant(superClass, nameAndTypeIndex),
+        //        method2)); //TODO method from this method are not referncably in code, so no construcotrs to use for c programmers
 
         var method = methodInfo.addMethod(accessFlags,nameIndex,argumentsIndex,new AttributeInfo());
         methods.put(name,method);
@@ -96,14 +127,16 @@ public class ClassFile {
             createMethod(new byte[]{(byte) 0x00, (byte) 0x08},"<clinit>","()V",new String[0]);
         }
         var code = methods.get("<clinit>");
+        FieldDescriptor fdesc = new FieldDescriptor(type, false);
+
         var utf8NameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
-        var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(type);
+        var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(fdesc.build());
 
         var nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(utf8NameIndex,utf8TypeIndex);
         var fieldRefIndex = constantPoolInfo.addFieldReferenceConstant(thisClass,nameAndTypeIndex);
         if (fieldReferencesIndex.containsKey(name))
             throw new Exception("Variable with this name already defined"); //TODO lazy error, w C jest shadowing zmiennych, ale to na koncu jesli wogole :D :P :O
-        fieldReferencesIndex.put(name, fieldRefIndex);
+        fieldReferencesIndex.put(name, new Variable(fieldRefIndex, type));
 
 //        for (var arg : arguments) { TODO TUTAJ INICJOWANIE ZMIENNYCH
 //            if (!utf8ConstantIndex.containsKey(arg))
@@ -116,15 +149,19 @@ public class ClassFile {
         if (!methods.containsKey("<clinit>")){
             createMethod(new byte[]{(byte) 0x00, (byte) 0x08},"<clinit>","()V",new String[0]);
         }
+
+        FieldDescriptor fdesc = new FieldDescriptor(type, false);
+
         var staticConstCode = methods.get("<clinit>");
+
         var utf8NameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
-        var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(type);
+        var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(fdesc.build());
 
         var nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(utf8NameIndex,utf8TypeIndex);
         var fieldRefIndex = constantPoolInfo.addFieldReferenceConstant(thisClass,nameAndTypeIndex);
         if (fieldReferencesIndex.containsKey(name))
             throw new Exception("Variable with this name already defined"); //TODO lazy error, w C jest shadowing zmiennych, ale to na koncu jesli wogole :D :P :O
-        fieldReferencesIndex.put(name, fieldRefIndex);
+        fieldReferencesIndex.put(name, new Variable(fieldRefIndex, type));
 
         staticConstCode.codeAttribute.setStackLocalsSize(stack.getStackSize(), stack.getLocalsSize());
 
@@ -143,16 +180,19 @@ public class ClassFile {
     public void createGlobalArrayWithInit(String type, String name, String[] values) throws Exception {
         if (!methods.containsKey("<clinit>")){
             createMethod(new byte[]{(byte) 0x00, (byte) 0x08},"<clinit>","()V",new String[0]);
+
         }
+        FieldDescriptor fdesc = new FieldDescriptor(type, false);
+
         var code = methods.get("<clinit>");
         var utf8NameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
-        var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(type);
+        var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(fdesc.build());
 
         var nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(utf8NameIndex,utf8TypeIndex);
         var fieldRefIndex = constantPoolInfo.addFieldReferenceConstant(thisClass,nameAndTypeIndex);
         if (fieldReferencesIndex.containsKey(name))
             throw new Exception("Variable with this name already defined"); //TODO lazy error, w C jest shadowing zmiennych, ale to na koncu jesli wogole :D :P :O
-        fieldReferencesIndex.put(name, fieldRefIndex);
+        fieldReferencesIndex.put(name, new Variable(fieldRefIndex, type));
 
 //        for (var arg : arguments) { TODO TUTAJ INICJOWANIE ZMIENNYCH
 //            if (!utf8ConstantIndex.containsKey(arg))
@@ -163,15 +203,19 @@ public class ClassFile {
 
     //TODO Tutaj jest "krotki" import printa, musisz go gdzies wywolac
     public void addPrint(){
-        if (methodReferencesIndex.containsKey("print"))
+        if (methodReferencesIndex.containsKey("printf"))
             return;
         var printStreamClassNameIndex = constantPoolInfo.addOrGetUtf8Constant("java/lang/System");
         var printStreamClassIndex = constantPoolInfo.addClassConstant(printStreamClassNameIndex);
-        var printNameIndex = constantPoolInfo.addOrGetUtf8Constant("print");
+        var printNameIndex = constantPoolInfo.addOrGetUtf8Constant("printf");
         var printDescriptorIndex = constantPoolInfo.addOrGetUtf8Constant("(Ljava/lang/String;)V");
         var printNameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(printNameIndex,printDescriptorIndex);
         var printMethodRef = constantPoolInfo.addMethodReferenceConstant(printStreamClassIndex,printNameAndTypeIndex);
-        methodReferencesIndex.put("print",printMethodRef);
+        List<Type> t = new ArrayList<>();
+        t.add(new Type(4, 1));
+        methodReferencesIndex.put("printf",new Pair<>(printMethodRef, new Method2(new Type(0, 0),
+                t
+        )));
 
         var outNameIndex = constantPoolInfo.addOrGetUtf8Constant("out");
         var outDescriptorIndex = constantPoolInfo.addOrGetUtf8Constant("Ljava/io/PrintStream;");
@@ -180,7 +224,7 @@ public class ClassFile {
         var systemClassNameIndex = constantPoolInfo.addOrGetUtf8Constant("java/lang/System");
         var systemClassIndex = constantPoolInfo.addClassConstant(systemClassNameIndex);
         var outFieldRef = constantPoolInfo.addFieldReferenceConstant(systemClassIndex,outNameAndType);
-        fieldReferencesIndex.put("print",outFieldRef);
+        fieldReferencesIndex.put("printf", new Variable(outFieldRef, ""));
     }
 
     public int getBytesLength(){
@@ -202,4 +246,7 @@ public class ClassFile {
             dos.write(getBytes());
         }
     }
+
+    public Map<String, Variable> fieldRefs(){return fieldReferencesIndex;}
+    public Map<String, Pair<byte[], Method2>> methodRefs(){return methodReferencesIndex;}
 }

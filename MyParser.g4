@@ -28,7 +28,7 @@ arrDeclInit : arrDeclId
 
 varDeclId : ID;
 
-arrDeclId : ID LSB intSimpleExp RSB;
+arrDeclId : ID LSB numSimpleExp RSB;
 
 funDecl : nonVoidFunDecl | voidFunDecl;
 
@@ -69,23 +69,18 @@ voidRStmt : voidReturnStmt | compoundStmt;
 voidReturnStmt : RETURN SEMICOLON;
 
 
-expStmt : boolExpStmt | intExpStmt | charExpStmt | floatExpStmt | boolArrExpStmt | intArrExpStmt | charArrExpStmt | floatArrExpStmt | SEMICOLON;
+expStmt : assignExpStmt | boolExpStmt | numExpStmt | SEMICOLON | printf;
 
-exp : boolExp | intExp | charExp | floatExp | boolArrExp | intArrExp | charArrExp | floatArrExp;
+exp : assignExp | boolExp | numExp;
 
-simpleExp : boolSimpleExp | intSimpleExp | charSimpleExp | floatSimpleExp | boolArrSimpleExp | intArrSimpleExp | charArrSimpleExp | floatArrSimpleExp;
+simpleExp : boolSimpleExp | numSimpleExp | charSimpleExp;
 
 boolExpStmt : boolExp SEMICOLON;
-intExpStmt : intExp SEMICOLON;
-charExpStmt : charExp SEMICOLON;
-floatExpStmt : floatExp SEMICOLON;
-boolArrExpStmt : boolArrExp SEMICOLON;
-intArrExpStmt : intArrExp SEMICOLON;
-charArrExpStmt : charArrExp SEMICOLON;
-floatArrExpStmt : floatArrExp SEMICOLON;
+numExpStmt : numExp SEMICOLON;
+assignExpStmt : assignExp SEMICOLON;
+printf : PRINTF LRB simpleExp RRB SEMICOLON;
 
-boolExp : mutable ASSIGN boolSimpleExp
-	| boolSimpleExp;
+boolExp : boolSimpleExp;
 
 boolSimpleExp : boolSimpleExp brelop orExp | orExp;
 
@@ -99,11 +94,10 @@ relExp : LRB boolSimpleExp RRB
 	| boolean
 	| call
 	| ID
-	| ID LSB intSimpleExp RSB
-	| LRB BOOL RRB intSimpleExp
-	| intSimpleExp relop intSimpleExp
-	| charSimpleExp relop charSimpleExp
-	| floatSimpleExp relop floatSimpleExp;
+	| ID LSB numSimpleExp RSB
+	| LRB BOOL RRB numSimpleExp
+	| numSimpleExp relop numSimpleExp
+	| charSimpleExp relop charSimpleExp;
 
 boolean : TRUE
          | FALSE;
@@ -118,91 +112,51 @@ relop : LESS_EQUAL
 brelop : EQUAL
       | NOT_EQUAL;
 
-intExp : mutable ASSIGN intSimpleExp
-	| mutable INCREASE intSimpleExp
-	| mutable DECREASE intSimpleExp
-	| mutable SELFMULTIPLY intSimpleExp
-	| mutable SELFDIVIDE intSimpleExp
-	| intSimpleExp;
+numExp : mutable INCREASE numSimpleExp
+	| mutable DECREASE numSimpleExp
+	| mutable SELFMULTIPLY numSimpleExp
+	| mutable SELFDIVIDE numSimpleExp
+	| numSimpleExp;
 
-intSimpleExp : intSimpleExp sumop intMulExp
-		| intMulExp;
+numSimpleExp : numSimpleExp sumop numMulExp
+		| numMulExp;
 
 sumop : PLUS
       | MINUS;
 
-intMulExp : intMulExp mulop intUnaryExp
-	| intUnaryExp;
+numMulExp : numMulExp mulop numUnaryExp
+	| numUnaryExp;
 
 mulop : MULTIPLY
       | DIVIDE;
 
-intUnaryExp : MINUS intUnaryExp | intFactor;
+numUnaryExp : MINUS numUnaryExp | numFactor;
 
-intFactor : LRB intSimpleExp RRB
+numFactor : LRB numSimpleExp RRB
 	| NUMCONST
+	| FLOATCONST
 	| call
 	| ID
-	| ID LSB intSimpleExp RSB
+	| ID LSB numSimpleExp RSB
 	| LRB INT RRB boolSimpleExp
 	| LRB INT RRB charSimpleExp
-	| LRB INT RRB floatSimpleExp;
+	| LRB INT RRB numSimpleExp
+	| LRB FLOAT RRB numSimpleExp;
 
 call : ID LRB args RRB;
 
 args : simpleExp (COMA simpleExp)* | ;
 
 mutable : ID
-	| ID LSB intSimpleExp RSB;
+	| ID LSB numSimpleExp RSB;
 
-floatExp : mutable ASSIGN floatSimpleExp
-	| mutable INCREASE floatSimpleExp
-	| mutable DECREASE floatSimpleExp
-	| mutable SELFMULTIPLY floatSimpleExp
-	| mutable SELFDIVIDE floatSimpleExp
-	| floatSimpleExp;
-
-floatSimpleExp : floatSimpleExp sumop floatMulExp
-		| floatMulExp;
-
-floatMulExp : floatMulExp mulop floatUnaryExp
-	| floatUnaryExp;
-
-floatUnaryExp : MINUS floatUnaryExp | floatFactor;
-
-floatFactor : LRB floatSimpleExp RRB
-	| FLOATCONST
-	| call
+charSimpleExp : CHARCONST
 	| ID
-	| ID LSB intSimpleExp RSB
-	| LRB FLOAT RRB intSimpleExp;
+	| ID LSB numSimpleExp RSB
+	| LRB CHAR RRB numSimpleExp;
 
-charExp : mutable ASSIGN charSimpleExp;
-
-charSimpleExp : call
-	| ID
-	| ID LSB intSimpleExp RSB
-	| LRB CHAR RRB intSimpleExp;
-
-boolArrExp : mutable ASSIGN boolArrSimpleExp;
-
-boolArrSimpleExp : call
-	| ID;
-
-intArrExp : mutable ASSIGN intArrSimpleExp;
-
-intArrSimpleExp : call
-	| ID;
-
-charArrExp : mutable ASSIGN charArrSimpleExp;
-
-charArrSimpleExp : call
-	| ID;
-
-floatArrExp : mutable ASSIGN floatArrSimpleExp;
-
-floatArrSimpleExp : call
-	| ID;
-
-
-
+assignExp : mutable ASSIGN mutable
+        | mutable ASSIGN call
+        | mutable ASSIGN numSimpleExp
+        | mutable ASSIGN charSimpleExp
+        | mutable ASSIGN boolSimpleExp;

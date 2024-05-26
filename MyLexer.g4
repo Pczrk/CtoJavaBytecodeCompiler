@@ -9,6 +9,14 @@ IF              : 'if';
 ELSE            : 'else';
 PRINTF          : 'printf';
 
+TRUE            : 'true';
+FALSE           : 'false';
+
+// LOGICAL OPERATORS:
+AND             : '&&';
+OR              : '||';
+NOT             : '!';
+
 // OPERATORS:
 ASSIGN          : '=';
 INCREASE        : '+=';
@@ -44,21 +52,15 @@ INT             : 'int';
 CHAR            : 'char';
 BOOL            : 'bool';
 
-// IDENTIFIER:
-ID              : [a-zA-Z_][a-zA-Z0-9_]*;
 
 // CONSTANT:
 FLOATCONST	    : [0-9]+ '.' [0-9]+;
 NUMCONST        : [0-9]+;
 CHARCONST       : '\''[a-zA-Z]'\'';
 STRINGCONST     : '"'[a-zA-Z]+'"';
-TRUE            : 'true';
-FALSE           : 'false';
 
-// LOGICAL OPERATORS:
-AND             : '&&';
-OR              : '||';
-NOT             : '!';
+// IDENTIFIER:
+ID              : [a-zA-Z_][a-zA-Z0-9_]*;
 
 // WHITESPACE:
 WHITESPACE      : [ \t\r\n]+ -> skip;

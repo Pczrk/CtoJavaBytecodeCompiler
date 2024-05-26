@@ -1,13 +1,10 @@
-import antlrGen.MyParserBaseListener;
 import antlrGen.MyParserListener;
-import descriptor.FieldDescriptor;
-import descriptor.MethodDescriptor;
+import classFile.MyListener;
 import antlrGen.MyLexer;
 import antlrGen.MyParser;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.IOException;
@@ -24,7 +21,7 @@ public class Main {
             MyParser.ProgramContext myContext = parser.program();;
 
             ParseTreeWalker walker = new ParseTreeWalker();
-            MyParserListener listener = new MyParserBaseListener();
+            MyParserListener listener = new MyListener();
             walker.walk(listener, myContext);
         }
         catch(IOException ignored){}

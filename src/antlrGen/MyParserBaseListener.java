@@ -1,13 +1,9 @@
-package antlrGen;// Generated from MyParser.g4 by ANTLR 4.13.1
+// Generated from MyParser.g4 by ANTLR 4.13.1
+package antlrGen;
 
-import classFile.ClassFile;
-import descriptor.FieldDescriptor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import simulation.Stack;
-
-import java.nio.ByteBuffer;
 
 /**
  * This class provides an empty implementation of {@link MyParserListener},
@@ -16,10 +12,6 @@ import java.nio.ByteBuffer;
  */
 @SuppressWarnings("CheckReturnValue")
 public class MyParserBaseListener implements MyParserListener {
-	ClassFile classFile = ClassFile.get();
-
-	Stack stack;
-
 	/**
 	 * {@inheritDoc}
 	 *
@@ -31,12 +23,7 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitProgram(MyParser.ProgramContext ctx) {
-		try{
-			classFile.generateClassFile();
-		}
-		catch (Exception ignored){};
-	}
+	@Override public void exitProgram(MyParser.ProgramContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -72,25 +59,7 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitVarSinDecl(MyParser.VarSinDeclContext ctx) {
-		if(ctx.parent instanceof MyParser.VarDeclContext){
-			FieldDescriptor fdesc = new FieldDescriptor(ctx.typeSpec().getText(), false);
-			for(MyParser.VarDeclInitContext init : ctx.varDeclList().varDeclInit()){
-				if(init.ASSIGN() != null){
-					try {
-						classFile.createGlobalVariableWithInit(fdesc.build(), init.varDeclId().ID().getText(), stack);//TODO value ma byc obliczane
-					}
-					catch(Exception ignored){}
-				}
-				else{
-					try {
-						classFile.createGlobalVariable(fdesc.build(), init.varDeclId().ID().getText());
-					}
-					catch(Exception ignored){}
-				}
-			}
-		}
-	}
+	@Override public void exitVarSinDecl(MyParser.VarSinDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -204,11 +173,7 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFunDecl(MyParser.FunDeclContext ctx) {
-		if(ctx.parent instanceof MyParser.VarDeclInitContext){
-			stack = new Stack(new String[0]);
-		}
-	}
+	@Override public void enterFunDecl(MyParser.FunDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -448,18 +413,13 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSimpleExp(MyParser.SimpleExpContext ctx) {
-		if(ctx.parent instanceof MyParser.VarDeclInitContext){
-			stack = new Stack(new String[0]);
-		}
-	}
+	@Override public void enterSimpleExp(MyParser.SimpleExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSimpleExp(MyParser.SimpleExpContext ctx) {
-	}
+	@Override public void exitSimpleExp(MyParser.SimpleExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -477,85 +437,37 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntExpStmt(MyParser.IntExpStmtContext ctx) { }
+	@Override public void enterNumExpStmt(MyParser.NumExpStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntExpStmt(MyParser.IntExpStmtContext ctx) { }
+	@Override public void exitNumExpStmt(MyParser.NumExpStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCharExpStmt(MyParser.CharExpStmtContext ctx) { }
+	@Override public void enterAssignExpStmt(MyParser.AssignExpStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCharExpStmt(MyParser.CharExpStmtContext ctx) { }
+	@Override public void exitAssignExpStmt(MyParser.AssignExpStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFloatExpStmt(MyParser.FloatExpStmtContext ctx) { }
+	@Override public void enterPrintf(MyParser.PrintfContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFloatExpStmt(MyParser.FloatExpStmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBoolArrExpStmt(MyParser.BoolArrExpStmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBoolArrExpStmt(MyParser.BoolArrExpStmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterIntArrExpStmt(MyParser.IntArrExpStmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIntArrExpStmt(MyParser.IntArrExpStmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCharArrExpStmt(MyParser.CharArrExpStmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCharArrExpStmt(MyParser.CharArrExpStmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFloatArrExpStmt(MyParser.FloatArrExpStmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFloatArrExpStmt(MyParser.FloatArrExpStmtContext ctx) { }
+	@Override public void exitPrintf(MyParser.PrintfContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -669,25 +581,25 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntExp(MyParser.IntExpContext ctx) { }
+	@Override public void enterNumExp(MyParser.NumExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntExp(MyParser.IntExpContext ctx) { }
+	@Override public void exitNumExp(MyParser.NumExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntSimpleExp(MyParser.IntSimpleExpContext ctx) { }
+	@Override public void enterNumSimpleExp(MyParser.NumSimpleExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntSimpleExp(MyParser.IntSimpleExpContext ctx) { }
+	@Override public void exitNumSimpleExp(MyParser.NumSimpleExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -705,13 +617,13 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntMulExp(MyParser.IntMulExpContext ctx) { }
+	@Override public void enterNumMulExp(MyParser.NumMulExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntMulExp(MyParser.IntMulExpContext ctx) { }
+	@Override public void exitNumMulExp(MyParser.NumMulExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -729,31 +641,25 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntUnaryExp(MyParser.IntUnaryExpContext ctx) { }
+	@Override public void enterNumUnaryExp(MyParser.NumUnaryExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntUnaryExp(MyParser.IntUnaryExpContext ctx) { }
+	@Override public void exitNumUnaryExp(MyParser.NumUnaryExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntFactor(MyParser.IntFactorContext ctx) { }
+	@Override public void enterNumFactor(MyParser.NumFactorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntFactor(MyParser.IntFactorContext ctx) {
-		if(ctx.NUMCONST()!=null){
-			byte[] valueIndex = classFile.constantPoolInfo.addIntegerConstant(Integer.parseInt(ctx.NUMCONST().getText()));
-			stack.addCode(ByteBuffer.allocate(3).put((byte)0xb2).put(valueIndex).array());
-			stack.setStackSize(1);
-		}
-	}
+	@Override public void exitNumFactor(MyParser.NumFactorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -795,78 +701,6 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFloatExp(MyParser.FloatExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFloatExp(MyParser.FloatExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFloatSimpleExp(MyParser.FloatSimpleExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFloatSimpleExp(MyParser.FloatSimpleExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFloatMulExp(MyParser.FloatMulExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFloatMulExp(MyParser.FloatMulExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFloatUnaryExp(MyParser.FloatUnaryExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFloatUnaryExp(MyParser.FloatUnaryExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFloatFactor(MyParser.FloatFactorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFloatFactor(MyParser.FloatFactorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCharExp(MyParser.CharExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCharExp(MyParser.CharExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterCharSimpleExp(MyParser.CharSimpleExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -879,97 +713,13 @@ public class MyParserBaseListener implements MyParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBoolArrExp(MyParser.BoolArrExpContext ctx) { }
+	@Override public void enterAssignExp(MyParser.AssignExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBoolArrExp(MyParser.BoolArrExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBoolArrSimpleExp(MyParser.BoolArrSimpleExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBoolArrSimpleExp(MyParser.BoolArrSimpleExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterIntArrExp(MyParser.IntArrExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIntArrExp(MyParser.IntArrExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterIntArrSimpleExp(MyParser.IntArrSimpleExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIntArrSimpleExp(MyParser.IntArrSimpleExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCharArrExp(MyParser.CharArrExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCharArrExp(MyParser.CharArrExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCharArrSimpleExp(MyParser.CharArrSimpleExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCharArrSimpleExp(MyParser.CharArrSimpleExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFloatArrExp(MyParser.FloatArrExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFloatArrExp(MyParser.FloatArrExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFloatArrSimpleExp(MyParser.FloatArrSimpleExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFloatArrSimpleExp(MyParser.FloatArrSimpleExpContext ctx) { }
+	@Override public void exitAssignExp(MyParser.AssignExpContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
