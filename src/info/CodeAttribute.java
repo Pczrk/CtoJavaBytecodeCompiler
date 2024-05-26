@@ -1,6 +1,7 @@
 package info;
 
 import java.nio.ByteBuffer;
+import simulation.Stack;
 
 /*
     Code_attribute {
@@ -74,6 +75,12 @@ public class CodeAttribute extends Attribute {
         maxStack = ByteBuffer.allocate(2).putShort((short)stack).array();
         maxLocals = ByteBuffer.allocate(2).putShort((short)locals).array();
 
+    }
+
+    public void fillWithStack(Stack s){
+        maxStack = ByteBuffer.allocate(2).putShort((short) s.getStackSize()).array();
+        maxLocals = ByteBuffer.allocate(2).putShort((short) s.getLocalsSize()).array();
+        addCode(s.getCode());
     }
 
     public void addEmptyReturn() {

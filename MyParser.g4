@@ -40,7 +40,7 @@ arrVoidFunDecl : typeSpec LSB RSB ID LRB params RRB nonVoidRStmt;
 
 voidFunDecl : VOID ID LRB params RRB voidRStmt;
 
-params : param*;
+params : param (COMA param)* | ;
 
 param : sinParam | arrParam;
 
@@ -53,7 +53,7 @@ nonVoidRStmt : nonVoidReturnStmt | nonVoidRCompoundStmt;
 
 nonVoidRCompoundStmt : LCB (scopedVarDecl | stmt)* nonVoidReturnStmt RCB;
  
-stmt : nonVoidReturnStmt | compoundStmt | selectStmt | iterStmt | expStmt;
+stmt : nonVoidReturnStmt | voidReturnStmt | compoundStmt | selectStmt | iterStmt | expStmt;
 
 nonVoidReturnStmt : RETURN simpleExp SEMICOLON;
 
@@ -73,7 +73,11 @@ expStmt : assignExpStmt | boolExpStmt | numExpStmt | SEMICOLON | printf;
 
 exp : assignExp | boolExp | numExp;
 
-simpleExp : boolSimpleExp | numSimpleExp | charSimpleExp;
+simpleExp : mutable
+        | call
+        | boolSimpleExp
+        | numSimpleExp
+        | charSimpleExp;
 
 boolExpStmt : boolExp SEMICOLON;
 numExpStmt : numExp SEMICOLON;
@@ -151,12 +155,9 @@ mutable : ID
 	| ID LSB numSimpleExp RSB;
 
 charSimpleExp : CHARCONST
+    | call
 	| ID
 	| ID LSB numSimpleExp RSB
 	| LRB CHAR RRB numSimpleExp;
 
-assignExp : mutable ASSIGN mutable
-        | mutable ASSIGN call
-        | mutable ASSIGN numSimpleExp
-        | mutable ASSIGN charSimpleExp
-        | mutable ASSIGN boolSimpleExp;
+assignExp : mutable ASSIGN simpleExp;

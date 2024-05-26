@@ -103,8 +103,8 @@ public class ClassFile {
         byte[] nameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
         byte[] argumentsIndex = constantPoolInfo.addOrGetUtf8Constant(arguments);
         byte[] nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(nameIndex,argumentsIndex);
-        //methodReferencesIndex.put(name,new Pair<>(constantPoolInfo.addMethodReferenceConstant(superClass, nameAndTypeIndex),
-        //        method2)); //TODO method from this method are not referncably in code, so no construcotrs to use for c programmers
+        methodReferencesIndex.put(name,new Pair<>(constantPoolInfo.addMethodReferenceConstant(superClass, nameAndTypeIndex),
+                new Method2(new Type(5, 0)))); //TODO method from this method are not referncably in code, so no construcotrs to use for c programmers
 
         var method = methodInfo.addMethod(accessFlags,nameIndex,argumentsIndex,new AttributeInfo());
         methods.put(name,method);

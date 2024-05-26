@@ -12,11 +12,11 @@ public class Type {
     }
 
     public Type(String type, int array){
-        switch(type){
-            case "int" : this.type = 1;
-            case "float" : this.type = 2;
-            case "bool" : this.type = 3;
-            case "char" : this.type = 4;
+        switch (type) {
+            case "int" -> this.type = 1;
+            case "float" -> this.type = 2;
+            case "bool" -> this.type = 3;
+            case "char" -> this.type = 4;
         }
         this.array = array;
     }
@@ -27,25 +27,25 @@ public class Type {
             desc.addArray();
         }
         switch (type){
-            case 1 : desc.addInt();
-            case 2 : desc.addFloat();
-            case 3 : desc.addBoolean();
-            case 4 : desc.addChar();
+            case 1 -> desc.addInt();
+            case 2 -> desc.addFloat();
+            case 3 -> desc.addBoolean();
+            case 4 -> desc.addChar();
         }
         return desc;
     }
 
     public ReturnDescriptor getReturnDescriptor() throws Exception {
         var desc = new ReturnDescriptor();
-        for(int i =0; i< array; i++){
+        for(int i =0; i < array; i++){
             desc.addArray();
         }
         switch (type){
-            case 0 : desc.addVoid();
-            case 1 : desc.addInt();
-            case 2 : desc.addFloat();
-            case 3 : desc.addBoolean();
-            case 4 : desc.addChar();
+            case 0 -> desc.addVoid();
+            case 1 -> desc.addInt();
+            case 2 -> desc.addFloat();
+            case 3 -> desc.addBoolean();
+            case 4 -> desc.addChar();
         }
         return desc;
     }

@@ -22,7 +22,7 @@ public class Stack {
 
     List<Integer> scopes;
 
-    java.util.Stack<Type> stackTypes;
+    public java.util.Stack<Type> stackTypes;
 
     public Stack(String[] argNames, Method2 m){
         classFile = ClassFile.get();
@@ -59,7 +59,7 @@ public class Stack {
         scopes.add(scopes.removeLast() + 1);
     }
 
-    public void addArr(String s, Type type, String size){
+    public void addArr(String s, Type type){
         if(classFile.fieldRefs().containsKey(s)){
             System.out.println("Variable with name: \"" + s + "\" already exists");
             return;
@@ -73,12 +73,11 @@ public class Stack {
         maxLocalsSize = Math.max(maxLocalsSize, locals.size());
         scopes.add(scopes.removeLast() + 1);
 
-        getConstInt(size);
         byte atype = 10;
         switch (type.t()){
-            case 2 : atype = 6;
-            case 3 : atype = 8;
-            case 4 : atype = 5;
+            case 2 -> atype = 6;
+            case 3 -> atype = 8;
+            case 4 -> atype = 5;
         }
         addCode(ByteBuffer.allocate(2).put((byte) 0xbc).put(atype).array());
         storeVar(s);
@@ -91,20 +90,16 @@ public class Stack {
             return;
         }
         if(locals.containsKey(s)){
-            Variable v = classFile.fieldRefs().get(s);
+            Variable v = locals.get(s);
             if(v.type.ar()){
                 aload(v.index);
             }
             else {
                 switch (v.type.t()) {
-                    case 1:
+                    case 1, 3, 4 ->
                         iload(v.index);
-                    case 2:
+                    case 2->
                         fload(v.index);
-                    case 3:
-                        iload(v.index);
-                    case 4:
-                        iload(v.index);
                 }
             }
             stackPushType(v.type);
@@ -133,7 +128,7 @@ public class Stack {
             return;
         }
         if(locals.containsKey(s)){
-            Variable v = classFile.fieldRefs().get(s);
+            Variable v = locals.get(s);
             if(!v.type.eq(stackPopType()))
             {
                 System.out.println("Saving one type to a variable of another type");
@@ -143,14 +138,10 @@ public class Stack {
             }
             else {
                 switch (v.type.t()) {
-                    case 1:
+                    case 1, 3, 4 ->
                         istore(v.index);
-                    case 2:
+                    case 2->
                         fstore(v.index);
-                    case 3:
-                        istore(v.index);
-                    case 4:
-                        istore(v.index);
                 }
             }
         }
@@ -179,10 +170,8 @@ public class Stack {
         }
         else{
             switch (type.t()){
-                case 1: iaload();
-                case 2: faload();
-                case 3: iaload();
-                case 4: iaload();
+                case 1, 3, 4 -> iaload();
+                case 2-> faload();
             }
         }
 
@@ -214,14 +203,10 @@ public class Stack {
         }
         else {
             switch (type.t()) {
-                case 1:
+                case 1, 3, 4 ->
                     iastore();
-                case 2:
+                case 2->
                     fastore();
-                case 3:
-                    iastore();
-                case 4:
-                    iastore();
             }
         }
         stackPopType();
@@ -286,7 +271,9 @@ public class Stack {
     }
 
     void i2b(){
-        addCode(ByteBuffer.allocate(1).put((byte)0x91).array());
+        short in = (short) code.length;
+        addCode(ByteBuffer.allocate(8).put((byte)0x99).putShort((short)(in + 7)).put((byte)0x04).put((byte)0xa7)
+                .putShort((short)(in + 8)).put((byte)0x03).array());
     }
 
     void i2c(){
@@ -294,7 +281,26 @@ public class Stack {
     }
 
     public void getConstInt(String s){
-        Variable v = new Variable(classFile.constantPoolInfo.addIntegerConstant(Integer.parseInt(s)), new Type(1, 0));
+        int val = Integer.parseInt(s);
+        if(val < 256){
+            addCode(ByteBuffer.allocate(2).put((byte)0x10).put((byte)val).array());
+            stackPushType(new Type(1,0));
+            return;
+        }
+
+        Variable v = new Variable(classFile.constantPoolInfo.addIntegerConstant(val), new Type(1, 0));
+        addCode(ByteBuffer.allocate(3).put((byte)0xb2).put(v.index).array());
+        stackPushType(new Type(1,0));
+    }
+
+    public void getConstInt(int val){
+        if(val < 256){
+            addCode(ByteBuffer.allocate(2).put((byte)0x10).put((byte)val).array());
+            stackPushType(new Type(1,0));
+            return;
+        }
+
+        Variable v = new Variable(classFile.constantPoolInfo.addIntegerConstant(val), new Type(1, 0));
         addCode(ByteBuffer.allocate(3).put((byte)0xb2).put(v.index).array());
         stackPushType(new Type(1,0));
     }
@@ -378,10 +384,10 @@ public class Stack {
             System.out.println("Subtraction type mismatch");
         }
         if(type.t() == 2){
-            fadd();
+            fsub();
         }
         else{
-            iadd();
+            isub();
         }
         stackPopType();
     }
@@ -392,10 +398,10 @@ public class Stack {
             System.out.println("Division type mismatch");
         }
         if(type.t() == 2){
-            fadd();
+            fdiv();
         }
         else{
-            iadd();
+            idiv();
         }
         stackPopType();
     }
@@ -406,10 +412,10 @@ public class Stack {
             System.out.println("Multiplication type mismatch");
         }
         if(type.t() == 2){
-            fadd();
+            fmul();
         }
         else{
-            iadd();
+            imul();
         }
         stackPopType();
     }
@@ -460,15 +466,16 @@ public class Stack {
         if(stackPeekType(0).t() != 3){
             System.out.println("Not operation type mismatch");
         }
-        getConstBool("true");
-        ixor();
+        short in = (short) code.length;
+        addCode(ByteBuffer.allocate(8).put((byte)0x99).putShort((short)(in + 7)).put((byte)0x03).put((byte)0xa7)
+                .putShort((short)(in + 8)).put((byte)0x04).array());
     }
 
     void ixor(){
         addCode(ByteBuffer.allocate(1).put((byte)0x82).array());
     }
 
-    void call(String s){ //TODO params typechecking, no i dont think i will
+    public void call(String s){ //TODO params typechecking, no i dont think i will
         if(!classFile.methodRefs().containsKey(s)){
             System.out.println("No method named :\"" + s +"\"");
         }
@@ -637,6 +644,29 @@ public class Stack {
 
     public void exitPrint(){
         addCode(ByteBuffer.allocate(3).put((byte) 0xb6).put(classFile.methodRefs().get("printf").a).array());
+
+    }
+
+    public void equals(){
+        short in = (short) code.length;
+        addCode(ByteBuffer.allocate(8).put((byte)0xa0).putShort((short)(in + 7)).put((byte)0x04).put((byte)0xa7)
+                .putShort((short)(in + 8)).put((byte)0x03).array());
+    }
+
+    public void notEquals(){
+        short in = (short) code.length;
+        addCode(ByteBuffer.allocate(8).put((byte)0xa0).putShort((short)(in + 7)).put((byte)0x03).put((byte)0xa7)
+                .putShort((short)(in + 8)).put((byte)0x04).array());
+    }
+
+    public void dup(){
+        addCode(ByteBuffer.allocate(1).put((byte)0x59).array());
+        stackPushType(stackPeekType(0));
+    }
+    public void dup2(){
+        addCode(ByteBuffer.allocate(1).put((byte)0x5c).array());
+        stackPushType(stackPeekType(1));
+        stackPushType(stackPeekType(1));
 
     }
 
