@@ -6,8 +6,9 @@ public class Method implements Info{
     byte[] accessFlags; // 2 bytes
     byte[] nameIndex; // 2 bytes
     byte[] descriptorIndex; // 2 bytes
-    AttributeInfo attributeInfo;
+    public AttributeInfo attributeInfo;
     public CodeAttribute codeAttribute; // THIS IS HELPER FIELD ITS GETS WRITTEN BY AttributeInfo
+
     public Method(byte[] accessFlags, byte[] nameIndex, byte[] descriptorIndex, AttributeInfo attributeInfo){
         this.accessFlags = accessFlags;
         this.nameIndex = nameIndex;

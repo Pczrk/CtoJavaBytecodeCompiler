@@ -35,8 +35,11 @@ public class CodeAttribute extends Attribute {
     byte[] exceptionTableLength = new byte[]{(byte) 0x00, (byte) 0x00}; // 2 bytes
     AttributeInfo attributeInfo = new AttributeInfo();
 
+    //StackMapTable stackMapTable;
+
     public CodeAttribute(byte[] attributeName) {
         super(attributeName);
+        //stackMapTable = new StackMapTable(ClassFile.get().constantPoolInfo.addOrGetUtf8Constant("StackMapTable"));
     }
 
     public void makeDefaultConstructor(byte[] constructorReference) { // 2a b7 0001 b1
@@ -82,6 +85,9 @@ public class CodeAttribute extends Attribute {
         maxStack = ByteBuffer.allocate(2).putShort((short) s.getStackSize()).array();
         maxLocals = ByteBuffer.allocate(2).putShort((short) s.getLocalsSize()).array();
         addCode(s.getCode());
+        /*for(Short offset : s.stackMapOffsets){
+            stackMapTable.add251(offset);
+        }*/
     }
 
     public void addEmptyReturn() {

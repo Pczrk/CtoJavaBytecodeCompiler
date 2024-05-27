@@ -98,8 +98,7 @@ public class MyListener extends MyParserBaseListener {
      * @see MyListener.exitArrDeclInit()
      * */
     @Override public void enterSimpleExp(MyParser.SimpleExpContext ctx) {
-        if(ctx.parent instanceof MyParser.ArrDeclInitContext){
-            MyParser.ArrDeclInitContext pa = (MyParser.ArrDeclInitContext) ctx.parent;
+        if(ctx.parent instanceof MyParser.ArrDeclInitContext pa){
             stack.storeArrEnter(pa.arrDeclId().ID().getText());
             int pos = (pa.children.indexOf(ctx) - 3)/2;
             stack.getConstInt(pos);
@@ -200,10 +199,19 @@ public class MyListener extends MyParserBaseListener {
     @Override public void exitBoolSimpleExp(MyParser.BoolSimpleExpContext ctx) {
         if(ctx.brelop()!=null){
             if(ctx.brelop().getText().equals("==")){
-                stack.equals();
+                stack.eqBool();
             }
             else{
-                stack.notEquals();
+                stack.notEqBool();
+            }
+        }
+
+        if(ctx.parent instanceof MyParser.SelectStmtContext pa){
+            if(pa.ELSE()!=null){
+                stack.enterIfElse();
+            }
+            else{
+                stack.enterIf();
             }
         }
     }
@@ -249,6 +257,16 @@ public class MyListener extends MyParserBaseListener {
         else if(ctx.BOOL()!=null){
             stack.boolConversion();
         }
+        else if(ctx.relop()!=null){
+            switch (ctx.relop().getText()){
+                case ("<=") -> stack.lessEqOp();
+                case ("<") -> stack.lessOp();
+                case (">=") -> stack.greaterEqOp();
+                case (">") -> stack.greaterOp();
+                case ("==") -> stack.eqOp();
+                case ("!=") -> stack.notEqOp();
+            }
+        }
     }
 
     @Override public void enterCharSimpleExp(MyParser.CharSimpleExpContext ctx){
@@ -293,7 +311,7 @@ public class MyListener extends MyParserBaseListener {
     }
 
     @Override public void exitCall(MyParser.CallContext ctx){
-        stack.call(ctx.ID().getText());
+        stack.call(ctx.ID().getText(), ctx.parent instanceof MyParser.ExpContext);
     }
 
     @Override public void enterMutable(MyParser.MutableContext ctx){
@@ -340,6 +358,41 @@ public class MyListener extends MyParserBaseListener {
 
     @Override public void exitPrintf(MyParser.PrintfContext ctx){
         stack.exitPrint();
+    }
+
+    @Override public void enterCompoundStmt(MyParser.CompoundStmtContext ctx){
+        stack.enterScope();
+    }
+
+    @Override public void exitCompoundStmt(MyParser.CompoundStmtContext ctx){
+        stack.exitScope();
+    }
+
+    @Override public void enterNonVoidRCompoundStmt(MyParser.NonVoidRCompoundStmtContext ctx){
+        stack.enterScope();
+    }
+
+    @Override public void exitNonVoidRCompoundStmt(MyParser.NonVoidRCompoundStmtContext ctx){
+        stack.exitScope();
+    }
+
+    @Override public void enterSelectStmt(MyParser.SelectStmtContext ctx) { }
+
+    @Override public void exitSelectStmt(MyParser.SelectStmtContext ctx) {
+        if(ctx.ELSE()!=null){
+            stack.exitIfElse();
+        }
+        else{
+            stack.exitIf();
+        }
+    }
+
+    @Override public void exitStmt(MyParser.StmtContext ctx) {
+        if(ctx.parent instanceof MyParser.SelectStmtContext pa){
+            if(pa.ELSE()!=null && pa.stmt(0) == ctx){
+                stack.midIfElse();
+            }
+        }
     }
 
 }

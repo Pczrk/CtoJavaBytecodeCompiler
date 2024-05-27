@@ -1,9 +1,8 @@
 package simulation;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+
 import info.Variable;
 import info.Type;
 import info.Method2;
@@ -11,6 +10,7 @@ import info.Method2;
 import classFile.ClassFile;
 
 public class Stack {
+
     ClassFile classFile;
     int maxStackSize = 0;
     int maxLocalsSize = 0;
@@ -297,9 +297,8 @@ public class Stack {
     }
 
     void i2b(){
-        short in = (short) code.length;
-        addCode(ByteBuffer.allocate(8).put((byte)0x99).putShort((short)(in + 7)).put((byte)0x04).put((byte)0xa7)
-                .putShort((short)(in + 8)).put((byte)0x03).array());
+        addCode(ByteBuffer.allocate(8).put((byte)0x99).putShort((short)(7)).put((byte)0x04).put((byte)0xa7)
+                .putShort((short)(4)).put((byte)0x03).array());
     }
 
     void i2c(){
@@ -492,16 +491,167 @@ public class Stack {
         if(stackPeekType(0).t() != 3){
             System.out.println("Not operation type mismatch");
         }
-        short in = (short) code.length;
-        addCode(ByteBuffer.allocate(8).put((byte)0x99).putShort((short)(in + 7)).put((byte)0x03).put((byte)0xa7)
-                .putShort((short)(in + 8)).put((byte)0x04).array());
+        addCode(ByteBuffer.allocate(8).put((byte)0x99).putShort((short)(7)).put((byte)0x03).put((byte)0xa7)
+                .putShort((short)(4)).put((byte)0x04).array());
+    }
+
+    public void lessEqOp(){ //TODO STACK Ślepoto
+        Type t = stackPopType(), t2 = stackPopType();
+        if(t.ar() || t2.ar()){
+            System.out.println("Cant compare arrays");
+        }
+
+        if(t.t()!=t2.t() || t.t() < 1 || t.t() > 2){
+            System.out.println("Compare operator type mismatch");
+        }
+
+
+        if(t.t() == 2){
+            addCode(ByteBuffer.allocate(9).put((byte)0x96)
+                    .put((byte)0x9d).putShort((short)(8))
+                    .put((byte)0x04).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x03).array());
+        }
+        else{
+            addCode(ByteBuffer.allocate(8)
+                    .put((byte)0xa3).putShort((short)(7))
+                    .put((byte)0x04).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x03).array());
+        }
+        stackPushType(new Type(3, 0));
+    }
+
+    public void greaterEqOp(){
+        Type t = stackPopType(), t2 = stackPopType();
+        if(t.ar() || t2.ar()){
+            System.out.println("Cant compare arrays");
+        }
+
+        if(t.t()!=t2.t() || t.t() < 1 || t.t() > 2){
+            System.out.println("Compare operator type mismatch");
+        }
+
+        if(t.t() == 2){
+            addCode(ByteBuffer.allocate(9).put((byte)0x95)
+                    .put((byte)0x9d).putShort((short)(8))
+                    .put((byte)0x04).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x03).array());
+        }
+        else{
+            addCode(ByteBuffer.allocate(8)
+                    .put((byte)0xa1).putShort((short)(7))
+                    .put((byte)0x04).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x03).array());
+        }
+        stackPushType(new Type(3, 0));
+    }
+
+    public void lessOp(){
+        Type t = stackPopType(), t2 = stackPopType();
+        if(t.ar() || t2.ar()){
+            System.out.println("Cant compare arrays");
+        }
+
+        if(t.t()!=t2.t() || t.t() < 1 || t.t() > 2){
+            System.out.println("Compare operator type mismatch");
+        }
+
+        if(t.t() == 2){
+            addCode(ByteBuffer.allocate(9).put((byte)0x95)
+                    .put((byte)0x9d).putShort((short)(8))
+                    .put((byte)0x03).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x04).array());
+        }
+        else{
+            addCode(ByteBuffer.allocate(8)
+                    .put((byte)0xa1).putShort((short)(7))
+                    .put((byte)0x03).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x04).array());
+        }
+
+        stackPushType(new Type(3, 0));
+    }
+
+    public void greaterOp(){
+        Type t = stackPopType(), t2 = stackPopType();
+        if(t.ar() || t2.ar()){
+            System.out.println("Cant compare arrays");
+        }
+
+        if(t.t()!=t2.t() || t.t() < 1 || t.t() > 2){
+            System.out.println("Compare operator type mismatch");
+        }
+
+        if(t.t() == 2){
+            addCode(ByteBuffer.allocate(9).put((byte)0x96)
+                    .put((byte)0x9d).putShort((short)(8))
+                    .put((byte)0x03).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x04).array());
+        }
+        else{
+            addCode(ByteBuffer.allocate(8)
+                    .put((byte)0xa3).putShort((short)(7))
+                    .put((byte)0x03).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x04).array());
+        }
+        stackPushType(new Type(3, 0));
+    }
+
+    public void eqOp(){
+        Type t = stackPopType(), t2 = stackPopType();
+        if(t.ar() || t2.ar()){
+            System.out.println("Cant compare arrays");
+        }
+
+        if(t.t()!=t2.t() || t.t() < 1 || t.t() > 2){
+            System.out.println("Compare operator type mismatch");
+        }
+
+        if(t.t() == 2){
+            addCode(ByteBuffer.allocate(9).put((byte)0x95)
+                    .put((byte)0x99).putShort((short)(8))
+                    .put((byte)0x03).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x04).array());
+        }
+        else{
+            addCode(ByteBuffer.allocate(8)
+                    .put((byte)0x9f).putShort((short)(7))
+                    .put((byte)0x03).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x04).array());
+        }
+        stackPushType(new Type(3, 0));
+    }
+
+    public void notEqOp(){
+        Type t = stackPopType(), t2 = stackPopType();
+        if(t.ar() || t2.ar()){
+            System.out.println("Cant compare arrays");
+        }
+
+        if(t.t()!=t2.t() || t.t() < 1 || t.t() > 2){
+            System.out.println("Compare operator type mismatch");
+        }
+
+        if(t.t() == 2){
+            addCode(ByteBuffer.allocate(9).put((byte)0x95)
+                    .put((byte)0x99).putShort((short)(8))
+                    .put((byte)0x04).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x03).array());
+        }
+        else{
+            addCode(ByteBuffer.allocate(8)
+                    .put((byte)0x9f).putShort((short)(7))
+                    .put((byte)0x04).put((byte)0xa7)
+                    .putShort((short)(4)).put((byte)0x03).array());
+        }
+        stackPushType(new Type(3, 0));
     }
 
     void ixor(){
         addCode(ByteBuffer.allocate(1).put((byte)0x82).array());
     }
 
-    public void call(String s){ //TODO params typechecking, no i dont think i will
+    public void call(String s, boolean popResult){ //TODO params typechecking, no i dont think i will
         if(!classFile.methodRefs().containsKey(s)){
             System.out.println("No method named :\"" + s +"\"");
         }
@@ -509,17 +659,28 @@ public class Stack {
         for(int i = 0; i < classFile.methodRefs().get(s).b.arguments.size(); ++i){
             stackPopType();
         }
-        stackPushType(classFile.methodRefs().get(s).b.returnType);
         invokestatic(index);
+        if(popResult && classFile.methodRefs().get(s).b.returnType.t()>0){
+            pop();
+        }
+        else{
+            stackPushType(classFile.methodRefs().get(s).b.returnType);
+        }
     }
 
     void invokestatic(byte[] index){
         addCode(ByteBuffer.allocate(3).put((byte)0xb8).put(index).array());
     }
 
-    void stackPop(){
+    public void stackPop(){
         pop();
         stackPopType();
+    }
+
+    public void stackPopCond(){
+        if(!stackTypes.empty()){
+            stackPop();
+        }
     }
 
     void pop(){
@@ -560,6 +721,7 @@ public class Stack {
     public void enterIf(){
         impers.add((short) code.length);
         ifeq();
+        stackPopType();
     }
 
     void ifeq(){
@@ -567,8 +729,8 @@ public class Stack {
     }
 
     public void exitIf(){
-        byte[] data = ByteBuffer.allocate(2).putShort((short) code.length).array();
         int index = impers.removeLast();
+        byte[] data = ByteBuffer.allocate(2).putShort((short) (code.length - index)).array();
         code[index+1] = data[0];
         code[index+2] = data[1];
     }
@@ -576,13 +738,14 @@ public class Stack {
     public void enterIfElse(){
         impers.add((short) code.length);
         ifeq();
+        stackPopType();
     }
 
     public void midIfElse(){
         int helper = code.length;
         gotoI();
-        byte[] data = ByteBuffer.allocate(2).putShort((short) code.length).array();
         int index = impers.removeLast();
+        byte[] data = ByteBuffer.allocate(2).putShort((short)(code.length - index)).array();
         code[index+1] = data[0];
         code[index+2] = data[1];
         impers.add((short) helper);
@@ -599,8 +762,8 @@ public class Stack {
     }
 
     public void exitIfElse(){
-        byte[] data = ByteBuffer.allocate(2).putShort((short) code.length).array();
         int index = impers.removeLast();
+        byte[] data = ByteBuffer.allocate(2).putShort((short) (code.length - index)).array();
         code[index+1] = data[0];
         code[index+2] = data[1];
     }
@@ -612,14 +775,14 @@ public class Stack {
     public void midWhile(){
         impers.add((short) code.length);
         ifeq();
+        stackPopType();
     }
 
     public void exitWhile(){
         short ifeq = impers.removeLast();
-        gotoI(impers.removeLast());
+        gotoI((short)(impers.removeLast() - code.length));
 
-
-        byte[] data = ByteBuffer.allocate(2).putShort((short) code.length).array();
+        byte[] data = ByteBuffer.allocate(2).putShort((short) (code.length - ifeq)).array();
         code[ifeq+1] = data[0];
         code[ifeq+2] = data[1];
     }
@@ -631,6 +794,7 @@ public class Stack {
     public void midFor(){
         impers.add((short) code.length);
         ifeq();
+        stackPopType();
     }
 
     public void mid2For() {
@@ -654,10 +818,10 @@ public class Stack {
         }
 
         short ifeq = (short) (inc - 3);
-        gotoI(impers.removeLast());
+        gotoI((short)(impers.removeLast() - code.length));
 
 
-        byte[] data = ByteBuffer.allocate(2).putShort((short) code.length).array();
+        byte[] data = ByteBuffer.allocate(2).putShort((short) (code.length - ifeq)).array();
         code[ifeq+1] = data[0];
         code[ifeq+2] = data[1];
     }
@@ -695,16 +859,14 @@ public class Stack {
         stackPopType();
     }
 
-    public void equals(){
-        short in = (short) code.length;
-        addCode(ByteBuffer.allocate(8).put((byte)0xa0).putShort((short)(in + 7)).put((byte)0x04).put((byte)0xa7)
-                .putShort((short)(in + 8)).put((byte)0x03).array());
+    public void eqBool(){
+        addCode(ByteBuffer.allocate(8).put((byte)0xa0).putShort((short)(7)).put((byte)0x04).put((byte)0xa7)
+                .putShort((short)(4)).put((byte)0x03).array());
     }
 
-    public void notEquals(){
-        short in = (short) code.length;
-        addCode(ByteBuffer.allocate(8).put((byte)0xa0).putShort((short)(in + 7)).put((byte)0x03).put((byte)0xa7)
-                .putShort((short)(in + 8)).put((byte)0x04).array());
+    public void notEqBool(){
+        addCode(ByteBuffer.allocate(8).put((byte)0xa0).putShort((short)(7)).put((byte)0x03).put((byte)0xa7)
+                .putShort((short)(4)).put((byte)0x04).array());
     }
 
     public void dup(){

@@ -4,11 +4,8 @@ int[] kwadrat(int c){
 }
 
 void main(){
-    char a[12] = {'H','e','l','l','o',' ','w','o','r','l','d'};
-    print(a);
-    int b[2];
-    b = kwadrat(10);
-    print(b[0]);
+    print(7.0 < 8.0);
+
 
     return;
 }

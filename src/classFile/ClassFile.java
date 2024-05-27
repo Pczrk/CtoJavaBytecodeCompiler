@@ -35,7 +35,7 @@ public class ClassFile {
     // Class file structure
     byte[] magicNumber =  {(byte) 0xca, (byte) 0xfe, (byte) 0xba, (byte) 0xbe};
     byte[] minorVersion = { (byte) 0x00, (byte) 0x00};
-    byte[] majorVersion = { (byte) 0x00, (byte) 0x40};
+    byte[] majorVersion = { (byte) 0x00, (byte) 0x32};
     public ConstantPoolInfo constantPoolInfo = new ConstantPoolInfo();
     byte[] accessFlags = {(byte) 0x00, (byte) 0x21}; // ACC_PUBLIC, ACC_SUPER
     byte[] thisClass = new byte[2]; // Class info.constant that points Main

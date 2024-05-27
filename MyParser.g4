@@ -61,7 +61,7 @@ compoundStmt : LCB (scopedVarDecl | stmt)* RCB;
 selectStmt : IF LRB boolSimpleExp RRB stmt
 	       | IF LRB boolSimpleExp RRB stmt ELSE stmt;
 iterStmt : WHILE LRB boolSimpleExp RRB stmt
-	     | FOR LRB scopedVarDecl boolExpStmt exp RRB stmt;
+	     | FOR LRB scopedVarDecl boolSimpleExp SEMICOLON exp RRB stmt;
 
 
 voidRStmt : voidReturnStmt | compoundStmt;
@@ -69,9 +69,9 @@ voidRStmt : voidReturnStmt | compoundStmt;
 voidReturnStmt : RETURN SEMICOLON;
 
 
-expStmt : printf | assignExpStmt | boolExpStmt | numExpStmt | SEMICOLON;
+expStmt : exp | SEMICOLON;
 
-exp : assignExp | boolExp | numExp;
+exp : printf | call | assignExp | numExp;
 
 simpleExp : mutable
         | call
@@ -79,10 +79,7 @@ simpleExp : mutable
         | numSimpleExp
         | charSimpleExp;
 
-boolExpStmt : boolExp SEMICOLON;
-numExpStmt : numExp SEMICOLON;
-assignExpStmt : assignExp SEMICOLON;
-printf : PRINTF LRB simpleExp RRB SEMICOLON;
+printf : PRINTF LRB simpleExp RRB;
 
 boolExp : boolSimpleExp;
 
@@ -119,8 +116,7 @@ brelop : EQUAL
 numExp : mutable INCREASE numSimpleExp
 	| mutable DECREASE numSimpleExp
 	| mutable SELFMULTIPLY numSimpleExp
-	| mutable SELFDIVIDE numSimpleExp
-	| numSimpleExp;
+	| mutable SELFDIVIDE numSimpleExp;
 
 numSimpleExp : numSimpleExp sumop numMulExp
 		| numMulExp;

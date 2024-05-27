@@ -24,6 +24,12 @@ public class AttributeInfo implements Info {
         return code;
     }
 
+    public StackMapTable addStackMapTableAttribute(byte[] attributeName) {
+        var stackMap = new StackMapTable(attributeName);
+        attributeList.add(stackMap);
+        return stackMap;
+    }
+
     @Override
     public int getBytesLength() {
         int bytesLength = 0;

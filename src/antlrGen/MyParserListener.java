@@ -348,36 +348,6 @@ public interface MyParserListener extends ParseTreeListener {
 	 */
 	void exitSimpleExp(MyParser.SimpleExpContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MyParser#boolExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterBoolExpStmt(MyParser.BoolExpStmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#boolExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitBoolExpStmt(MyParser.BoolExpStmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#numExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterNumExpStmt(MyParser.NumExpStmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#numExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitNumExpStmt(MyParser.NumExpStmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MyParser#assignExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterAssignExpStmt(MyParser.AssignExpStmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MyParser#assignExpStmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitAssignExpStmt(MyParser.AssignExpStmtContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MyParser#printf}.
 	 * @param ctx the parse tree
 	 */
