@@ -2,6 +2,7 @@ package info;
 
 import java.nio.ByteBuffer;
 import simulation.Stack;
+import classFile.ClassFile;
 
 /*
     Code_attribute {
@@ -85,5 +86,18 @@ public class CodeAttribute extends Attribute {
 
     public void addEmptyReturn() {
         code = ByteBuffer.allocate(code.length + 1).put(code).put((byte) 0xb1).array();
+    }
+
+    public void setMainFun() {
+        if(ClassFile.get().methodRefs().get("mainLORemIpSuM") == null){
+            System.out.println("No main function detected");
+        }
+        byte[] in = ClassFile.get().methodRefs().get("mainLORemIpSuM").a;
+        Type r = ClassFile.get().methodRefs().get("mainLORemIpSuM").b.returnType;
+        if(r.ar() || r.t() > 0){
+            System.out.println("Main must return void");
+        }
+        code = ByteBuffer.allocate(4).put((byte)0xb8).put(in).put((byte) 0xb1).array();
+
     }
 }

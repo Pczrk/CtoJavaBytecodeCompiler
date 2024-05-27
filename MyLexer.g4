@@ -7,7 +7,7 @@ RETURN          : 'return';
 BREAK           : 'break';
 IF              : 'if';
 ELSE            : 'else';
-PRINTF          : 'printf';
+PRINTF          : 'print';
 
 TRUE            : 'true';
 FALSE           : 'false';
@@ -56,7 +56,7 @@ BOOL            : 'bool';
 // CONSTANT:
 FLOATCONST	    : [0-9]+ '.' [0-9]+;
 NUMCONST        : [0-9]+;
-CHARCONST       : '\''[a-zA-Z]'\'';
+CHARCONST       : '\''[a-zA-Z \t\r\n]'\'';
 STRINGCONST     : '"'[a-zA-Z]+'"';
 
 // IDENTIFIER:

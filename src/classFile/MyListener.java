@@ -16,8 +16,10 @@ public class MyListener extends MyParserBaseListener {
 
     CodeAttribute currentFuncCode;
 
-    @Override public void enterProgram(MyParser.ProgramContext ctx) {}
+    @Override public void enterProgram(MyParser.ProgramContext ctx) {
+    }
     @Override public void exitProgram(MyParser.ProgramContext ctx) {
+        classFile.methods.get("main").codeAttribute.setMainFun();
         try {
             classFile.generateClassFile();
         }
@@ -44,6 +46,10 @@ public class MyListener extends MyParserBaseListener {
             params = ctx.nonVoidFunDecl().arrVoidFunDecl().params();
             m = new Method2(new Type(ctx.nonVoidFunDecl().arrVoidFunDecl().typeSpec().getText(), 1));
             name = ctx.nonVoidFunDecl().arrVoidFunDecl().ID().getText();
+        }
+
+        if(name.equals("main")){
+            name+="LORemIpSuM";
         }
 
 
@@ -85,7 +91,7 @@ public class MyListener extends MyParserBaseListener {
 
     @Override public void exitArrDeclId(MyParser.ArrDeclIdContext ctx) {
         stack.addArr(ctx.ID().getText(),
-                new Type(((MyParser.VarArrDeclContext)ctx.parent.parent.parent).typeSpec().getText(), 0));
+                new Type(((MyParser.VarArrDeclContext)ctx.parent.parent.parent).typeSpec().getText(), 1));
     }
 
     /**
@@ -255,7 +261,7 @@ public class MyListener extends MyParserBaseListener {
 
     @Override public void exitCharSimpleExp(MyParser.CharSimpleExpContext ctx){
         if(ctx.CHARCONST()!=null){
-            stack.getConstChar(ctx.CHARCONST().getText());
+            stack.getConstChar(ctx.CHARCONST().getText().substring(1, 2));
         }
         else if(ctx.ID()!=null){
             if(ctx.LSB()!=null){
@@ -318,6 +324,22 @@ public class MyListener extends MyParserBaseListener {
                 stack.getArrExit();
             }
         }
+    }
+
+    @Override public void exitNonVoidReturnStmt(MyParser.NonVoidReturnStmtContext ctx){
+        stack.returnNonVoid();
+    }
+
+    @Override public void exitVoidReturnStmt(MyParser.VoidReturnStmtContext ctx){
+        stack.returnVoid();
+    }
+
+    @Override public void enterPrintf(MyParser.PrintfContext ctx){
+        stack.enterPrint();
+    }
+
+    @Override public void exitPrintf(MyParser.PrintfContext ctx){
+        stack.exitPrint();
     }
 
 }

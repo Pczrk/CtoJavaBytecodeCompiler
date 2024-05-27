@@ -82,7 +82,8 @@ public class ClassFile {
         byte[] nameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
         byte[] argumentsIndex = constantPoolInfo.addOrGetUtf8Constant(MethodDescriptor.fromMethod2(method2).build());
         byte[] nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(nameIndex,argumentsIndex);
-        methodReferencesIndex.put(name,new Pair<>(constantPoolInfo.addMethodReferenceConstant(superClass, nameAndTypeIndex),
+        methodReferencesIndex.put(name,new Pair<>(constantPoolInfo.addMethodReferenceConstant(
+                name.equals("<init>") ? superClass : thisClass, nameAndTypeIndex),
                 method2));
 
         var method = methodInfo.addMethod(accessFlags,nameIndex,argumentsIndex,new AttributeInfo());
@@ -103,7 +104,8 @@ public class ClassFile {
         byte[] nameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
         byte[] argumentsIndex = constantPoolInfo.addOrGetUtf8Constant(arguments);
         byte[] nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(nameIndex,argumentsIndex);
-        methodReferencesIndex.put(name,new Pair<>(constantPoolInfo.addMethodReferenceConstant(superClass, nameAndTypeIndex),
+        methodReferencesIndex.put(name,new Pair<>(constantPoolInfo.addMethodReferenceConstant(
+                name.equals("<init>") ? superClass : thisClass, nameAndTypeIndex),
                 new Method2(new Type(5, 0)))); //TODO method from this method are not referncably in code, so no construcotrs to use for c programmers
 
         var method = methodInfo.addMethod(accessFlags,nameIndex,argumentsIndex,new AttributeInfo());
@@ -203,19 +205,76 @@ public class ClassFile {
 
     //TODO Tutaj jest "krotki" import printa, musisz go gdzies wywolac
     public void addPrint(){
-        if (methodReferencesIndex.containsKey("printf"))
+        if (methodReferencesIndex.containsKey("print"))
             return;
-        var printStreamClassNameIndex = constantPoolInfo.addOrGetUtf8Constant("java/lang/System");
+        var printStreamClassNameIndex = constantPoolInfo.addOrGetUtf8Constant("java/io/PrintStream");
         var printStreamClassIndex = constantPoolInfo.addClassConstant(printStreamClassNameIndex);
-        var printNameIndex = constantPoolInfo.addOrGetUtf8Constant("printf");
+        var printNameIndex = constantPoolInfo.addOrGetUtf8Constant("print");
+        //var printDescriptorIndex = constantPoolInfo.addOrGetUtf8Constant("(Ljava/lang/String;)V");
         var printDescriptorIndex = constantPoolInfo.addOrGetUtf8Constant("(Ljava/lang/String;)V");
         var printNameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(printNameIndex,printDescriptorIndex);
         var printMethodRef = constantPoolInfo.addMethodReferenceConstant(printStreamClassIndex,printNameAndTypeIndex);
         List<Type> t = new ArrayList<>();
         t.add(new Type(4, 1));
-        methodReferencesIndex.put("printf",new Pair<>(printMethodRef, new Method2(new Type(0, 0),
+        methodReferencesIndex.put("print",new Pair<>(printMethodRef, new Method2(new Type(0, 0),
                 t
         )));
+
+        //int
+
+        printDescriptorIndex = constantPoolInfo.addOrGetUtf8Constant("(I)V");
+        printNameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(printNameIndex,printDescriptorIndex);
+        printMethodRef = constantPoolInfo.addMethodReferenceConstant(printStreamClassIndex,printNameAndTypeIndex);
+        t = new ArrayList<>();
+        t.add(new Type(4, 1));
+        methodReferencesIndex.put("print\\I",new Pair<>(printMethodRef, new Method2(new Type(0, 0),
+                t
+        )));
+
+        //float
+
+        printDescriptorIndex = constantPoolInfo.addOrGetUtf8Constant("(F)V");
+        printNameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(printNameIndex,printDescriptorIndex);
+        printMethodRef = constantPoolInfo.addMethodReferenceConstant(printStreamClassIndex,printNameAndTypeIndex);
+        t = new ArrayList<>();
+        t.add(new Type(4, 1));
+        methodReferencesIndex.put("print\\F",new Pair<>(printMethodRef, new Method2(new Type(0, 0),
+                t
+        )));
+
+        //bool
+
+        printDescriptorIndex = constantPoolInfo.addOrGetUtf8Constant("(Z)V");
+        printNameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(printNameIndex,printDescriptorIndex);
+        printMethodRef = constantPoolInfo.addMethodReferenceConstant(printStreamClassIndex,printNameAndTypeIndex);
+        t = new ArrayList<>();
+        t.add(new Type(4, 1));
+        methodReferencesIndex.put("print\\B",new Pair<>(printMethodRef, new Method2(new Type(0, 0),
+                t
+        )));
+
+        //char
+
+        printDescriptorIndex = constantPoolInfo.addOrGetUtf8Constant("(C)V");
+        printNameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(printNameIndex,printDescriptorIndex);
+        printMethodRef = constantPoolInfo.addMethodReferenceConstant(printStreamClassIndex,printNameAndTypeIndex);
+        t = new ArrayList<>();
+        t.add(new Type(4, 1));
+        methodReferencesIndex.put("print\\C",new Pair<>(printMethodRef, new Method2(new Type(0, 0),
+                t
+        )));
+
+        //charArr
+
+        printDescriptorIndex = constantPoolInfo.addOrGetUtf8Constant("([C)V");
+        printNameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(printNameIndex,printDescriptorIndex);
+        printMethodRef = constantPoolInfo.addMethodReferenceConstant(printStreamClassIndex,printNameAndTypeIndex);
+        t = new ArrayList<>();
+        t.add(new Type(4, 1));
+        methodReferencesIndex.put("print\\[C",new Pair<>(printMethodRef, new Method2(new Type(0, 0),
+                t
+        )));
+
 
         var outNameIndex = constantPoolInfo.addOrGetUtf8Constant("out");
         var outDescriptorIndex = constantPoolInfo.addOrGetUtf8Constant("Ljava/io/PrintStream;");
@@ -224,7 +283,7 @@ public class ClassFile {
         var systemClassNameIndex = constantPoolInfo.addOrGetUtf8Constant("java/lang/System");
         var systemClassIndex = constantPoolInfo.addClassConstant(systemClassNameIndex);
         var outFieldRef = constantPoolInfo.addFieldReferenceConstant(systemClassIndex,outNameAndType);
-        fieldReferencesIndex.put("printf", new Variable(outFieldRef, ""));
+        fieldReferencesIndex.put("print", new Variable(outFieldRef, ""));
     }
 
     public int getBytesLength(){

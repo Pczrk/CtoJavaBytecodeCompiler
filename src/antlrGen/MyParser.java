@@ -59,7 +59,7 @@ public class MyParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'for'", "'while'", "'return'", "'break'", "'if'", "'else'", "'printf'", 
+			null, "'for'", "'while'", "'return'", "'break'", "'if'", "'else'", "'print'", 
 			"'true'", "'false'", "'&&'", "'||'", "'!'", "'='", "'+='", "'-='", "'*='", 
 			"'/='", "'=='", "'!='", "'<'", "'>'", "'<='", "'>='", "'+'", "'-'", "'*'", 
 			"'/'", "':'", "';'", "','", "'('", "')'", "'{'", "'}'", "'['", "']'", 
@@ -2074,6 +2074,9 @@ public class MyParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class ExpStmtContext extends ParserRuleContext {
+		public PrintfContext printf() {
+			return getRuleContext(PrintfContext.class,0);
+		}
 		public AssignExpStmtContext assignExpStmt() {
 			return getRuleContext(AssignExpStmtContext.class,0);
 		}
@@ -2084,9 +2087,6 @@ public class MyParser extends Parser {
 			return getRuleContext(NumExpStmtContext.class,0);
 		}
 		public TerminalNode SEMICOLON() { return getToken(MyParser.SEMICOLON, 0); }
-		public PrintfContext printf() {
-			return getRuleContext(PrintfContext.class,0);
-		}
 		public ExpStmtContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2112,35 +2112,35 @@ public class MyParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(322);
-				assignExpStmt();
+				printf();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(323);
-				boolExpStmt();
+				assignExpStmt();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(324);
-				numExpStmt();
+				boolExpStmt();
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(325);
-				match(SEMICOLON);
+				numExpStmt();
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(326);
-				printf();
+				match(SEMICOLON);
 				}
 				break;
 			}
@@ -4314,9 +4314,9 @@ public class MyParser extends Parser {
 		"<\u001e\u0000\u013c\u013e\u00034\u001a\u0000\u013d\u013b\u0001\u0000\u0000"+
 		"\u0000\u013d\u013c\u0001\u0000\u0000\u0000\u013e;\u0001\u0000\u0000\u0000"+
 		"\u013f\u0140\u0005\u0003\u0000\u0000\u0140\u0141\u0005\u001d\u0000\u0000"+
-		"\u0141=\u0001\u0000\u0000\u0000\u0142\u0148\u0003H$\u0000\u0143\u0148"+
-		"\u0003D\"\u0000\u0144\u0148\u0003F#\u0000\u0145\u0148\u0005\u001d\u0000"+
-		"\u0000\u0146\u0148\u0003J%\u0000\u0147\u0142\u0001\u0000\u0000\u0000\u0147"+
+		"\u0141=\u0001\u0000\u0000\u0000\u0142\u0148\u0003J%\u0000\u0143\u0148"+
+		"\u0003H$\u0000\u0144\u0148\u0003D\"\u0000\u0145\u0148\u0003F#\u0000\u0146"+
+		"\u0148\u0005\u001d\u0000\u0000\u0147\u0142\u0001\u0000\u0000\u0000\u0147"+
 		"\u0143\u0001\u0000\u0000\u0000\u0147\u0144\u0001\u0000\u0000\u0000\u0147"+
 		"\u0145\u0001\u0000\u0000\u0000\u0147\u0146\u0001\u0000\u0000\u0000\u0148"+
 		"?\u0001\u0000\u0000\u0000\u0149\u014d\u0003t:\u0000\u014a\u014d\u0003"+

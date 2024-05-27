@@ -69,7 +69,7 @@ voidRStmt : voidReturnStmt | compoundStmt;
 voidReturnStmt : RETURN SEMICOLON;
 
 
-expStmt : assignExpStmt | boolExpStmt | numExpStmt | SEMICOLON | printf;
+expStmt : printf | assignExpStmt | boolExpStmt | numExpStmt | SEMICOLON;
 
 exp : assignExp | boolExp | numExp;
 

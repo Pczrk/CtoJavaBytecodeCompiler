@@ -80,6 +80,8 @@ public class Stack {
             case 4 -> atype = 5;
         }
         addCode(ByteBuffer.allocate(2).put((byte) 0xbc).put(atype).array());
+        stackPopType();
+        stackPushType(type);
         storeVar(s);
     }
 
@@ -129,9 +131,10 @@ public class Stack {
         }
         if(locals.containsKey(s)){
             Variable v = locals.get(s);
-            if(!v.type.eq(stackPopType()))
+            var x = stackPopType();
+            if(!v.type.eq(x))
             {
-                System.out.println("Saving one type to a variable of another type");
+                System.out.println("Saving one type to a variable of another type: " + s);
             }
             if(v.type.ar()){
                 astore(v.index);
@@ -170,8 +173,10 @@ public class Stack {
         }
         else{
             switch (type.t()){
-                case 1, 3, 4 -> iaload();
+                case 1-> iaload();
                 case 2-> faload();
+                case 3-> baload();
+                case 4-> caload();
             }
         }
 
@@ -192,6 +197,14 @@ public class Stack {
         addCode(ByteBuffer.allocate(1).put((byte)0x30).array());
     }
 
+    void baload(){
+        addCode(ByteBuffer.allocate(1).put((byte)0x33).array());
+    }
+
+    void caload(){
+        addCode(ByteBuffer.allocate(1).put((byte)0x34).array());
+    }
+
     public void storeArrEnter(String s){
         getVar(s);
     }
@@ -203,10 +216,14 @@ public class Stack {
         }
         else {
             switch (type.t()) {
-                case 1, 3, 4 ->
+                case 1->
                     iastore();
                 case 2->
                     fastore();
+                case 3->
+                    bastore();
+                case 4->
+                    castore();
             }
         }
         stackPopType();
@@ -225,6 +242,15 @@ public class Stack {
     void fastore(){
         addCode(ByteBuffer.allocate(1).put((byte)0x51).array());
     }
+
+    void bastore(){
+        addCode(ByteBuffer.allocate(1).put((byte)0x54).array());
+    }
+
+    void castore(){
+        addCode(ByteBuffer.allocate(1).put((byte)0x55).array());
+    }
+
 
     public void intConversion(){
         Type type = stackPeekType(0);
@@ -639,12 +665,34 @@ public class Stack {
     public void enterPrint(){
         classFile.addPrint();
         stackPushType(new Type(5, 0));
-        addCode(ByteBuffer.allocate(3).put((byte) 0xb2).put(classFile.fieldRefs().get("printf").index).array());
+        addCode(ByteBuffer.allocate(3).put((byte) 0xb2).put(classFile.fieldRefs().get("print").index).array());
     }
 
     public void exitPrint(){
-        addCode(ByteBuffer.allocate(3).put((byte) 0xb6).put(classFile.methodRefs().get("printf").a).array());
+        Type t = stackPopType();
+        if(t.t() == 2){
+            addCode(ByteBuffer.allocate(3).put((byte) 0xb6).put(classFile.methodRefs().get("print\\F").a).array());
 
+        }
+        else if(t.t() == 3){
+            addCode(ByteBuffer.allocate(3).put((byte) 0xb6).put(classFile.methodRefs().get("print\\B").a).array());
+
+        }
+        else if(t.t() == 4){
+            if(t.ar()){
+                addCode(ByteBuffer.allocate(3).put((byte) 0xb6).put(classFile.methodRefs().get("print\\[C").a).array());
+
+            }
+            else{
+                addCode(ByteBuffer.allocate(3).put((byte) 0xb6).put(classFile.methodRefs().get("print\\C").a).array());
+
+            }
+        }
+        else{
+            addCode(ByteBuffer.allocate(3).put((byte) 0xb6).put(classFile.methodRefs().get("print\\I").a).array());
+        }
+
+        stackPopType();
     }
 
     public void equals(){
