@@ -307,32 +307,32 @@ public class Stack {
 
     public void getConstInt(String s){
         int val = Integer.parseInt(s);
-        if(val < 256){
+        if(val < 128 && val >-129){
             addCode(ByteBuffer.allocate(2).put((byte)0x10).put((byte)val).array());
             stackPushType(new Type(1,0));
             return;
         }
 
         Variable v = new Variable(classFile.constantPoolInfo.addIntegerConstant(val), new Type(1, 0));
-        addCode(ByteBuffer.allocate(3).put((byte)0xb2).put(v.index).array());
+        addCode(ByteBuffer.allocate(3).put((byte)0x13).put(v.index).array());
         stackPushType(new Type(1,0));
     }
 
     public void getConstInt(int val){
-        if(val < 256){
+        if(val < 128 && val >-129){
             addCode(ByteBuffer.allocate(2).put((byte)0x10).put((byte)val).array());
             stackPushType(new Type(1,0));
             return;
         }
 
         Variable v = new Variable(classFile.constantPoolInfo.addIntegerConstant(val), new Type(1, 0));
-        addCode(ByteBuffer.allocate(3).put((byte)0xb2).put(v.index).array());
+        addCode(ByteBuffer.allocate(3).put((byte)0x13).put(v.index).array());
         stackPushType(new Type(1,0));
     }
 
     public void getConstFloat(String s) {
         Variable v = new Variable(classFile.constantPoolInfo.addFloatConstant(Float.parseFloat(s)), new Type(1, 0));
-        addCode(ByteBuffer.allocate(3).put((byte) 0xb2).put(v.index).array());
+        addCode(ByteBuffer.allocate(3).put((byte) 0x13).put(v.index).array());
         stackPushType(new Type(2,0));
     }
 
@@ -508,7 +508,7 @@ public class Stack {
 
         if(t.t() == 2){
             addCode(ByteBuffer.allocate(9).put((byte)0x96)
-                    .put((byte)0x9d).putShort((short)(8))
+                    .put((byte)0x9d).putShort((short)(7))
                     .put((byte)0x04).put((byte)0xa7)
                     .putShort((short)(4)).put((byte)0x03).array());
         }
@@ -533,7 +533,7 @@ public class Stack {
 
         if(t.t() == 2){
             addCode(ByteBuffer.allocate(9).put((byte)0x95)
-                    .put((byte)0x9d).putShort((short)(8))
+                    .put((byte)0x9b).putShort((short)(7))
                     .put((byte)0x04).put((byte)0xa7)
                     .putShort((short)(4)).put((byte)0x03).array());
         }
@@ -558,7 +558,7 @@ public class Stack {
 
         if(t.t() == 2){
             addCode(ByteBuffer.allocate(9).put((byte)0x95)
-                    .put((byte)0x9d).putShort((short)(8))
+                    .put((byte)0x9b).putShort((short)(7))
                     .put((byte)0x03).put((byte)0xa7)
                     .putShort((short)(4)).put((byte)0x04).array());
         }
@@ -584,7 +584,7 @@ public class Stack {
 
         if(t.t() == 2){
             addCode(ByteBuffer.allocate(9).put((byte)0x96)
-                    .put((byte)0x9d).putShort((short)(8))
+                    .put((byte)0x9d).putShort((short)(7))
                     .put((byte)0x03).put((byte)0xa7)
                     .putShort((short)(4)).put((byte)0x04).array());
         }
@@ -609,7 +609,7 @@ public class Stack {
 
         if(t.t() == 2){
             addCode(ByteBuffer.allocate(9).put((byte)0x95)
-                    .put((byte)0x99).putShort((short)(8))
+                    .put((byte)0x99).putShort((short)(7))
                     .put((byte)0x03).put((byte)0xa7)
                     .putShort((short)(4)).put((byte)0x04).array());
         }
@@ -634,7 +634,7 @@ public class Stack {
 
         if(t.t() == 2){
             addCode(ByteBuffer.allocate(9).put((byte)0x95)
-                    .put((byte)0x99).putShort((short)(8))
+                    .put((byte)0x99).putShort((short)(7))
                     .put((byte)0x04).put((byte)0xa7)
                     .putShort((short)(4)).put((byte)0x03).array());
         }
@@ -677,12 +677,6 @@ public class Stack {
         stackPopType();
     }
 
-    public void stackPopCond(){
-        if(!stackTypes.empty()){
-            stackPop();
-        }
-    }
-
     void pop(){
         addCode(ByteBuffer.allocate(1).put((byte)0x57).array());
     }
@@ -692,7 +686,7 @@ public class Stack {
     }
 
     public void returnNonVoid(){
-        Type type = stackPeekType(0);
+        Type type = stackPopType();
         if(type.ar()){
             areturn();
         }
@@ -787,17 +781,17 @@ public class Stack {
         code[ifeq+2] = data[1];
     }
 
-    public void enterFor(){
+    public void enterCondFor(){
         impers.add((short) code.length);
     }
 
-    public void midFor(){
+    public void exitCondFor(){
         impers.add((short) code.length);
         ifeq();
         stackPopType();
     }
 
-    public void mid2For() {
+    public void exitIncrFor() {
         impers.add((short) code.length);
     }
 

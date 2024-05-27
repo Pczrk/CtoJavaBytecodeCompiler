@@ -174,7 +174,7 @@ public class MyListener extends MyParserBaseListener {
 
     @Override public void exitNumExp(MyParser.NumExpContext ctx){
         if(ctx.INCREASE()!=null){
-            stack.subtraction();
+            stack.summation();
         }
         else if(ctx.DECREASE()!=null){
             stack.subtraction();
@@ -196,6 +196,15 @@ public class MyListener extends MyParserBaseListener {
         }
     }
 
+    @Override public void enterBoolSimpleExp(MyParser.BoolSimpleExpContext ctx) {
+
+        if(ctx.parent instanceof MyParser.IterStmtContext pa){
+            if(pa.WHILE()==null){
+                stack.enterCondFor();
+            }
+        }
+    }
+
     @Override public void exitBoolSimpleExp(MyParser.BoolSimpleExpContext ctx) {
         if(ctx.brelop()!=null){
             if(ctx.brelop().getText().equals("==")){
@@ -212,6 +221,15 @@ public class MyListener extends MyParserBaseListener {
             }
             else{
                 stack.enterIf();
+            }
+        }
+
+        if(ctx.parent instanceof MyParser.IterStmtContext pa){
+            if(pa.WHILE()!=null){
+                stack.midWhile();
+            }
+            else{
+                stack.exitCondFor();
             }
         }
     }
@@ -391,6 +409,33 @@ public class MyListener extends MyParserBaseListener {
         if(ctx.parent instanceof MyParser.SelectStmtContext pa){
             if(pa.ELSE()!=null && pa.stmt(0) == ctx){
                 stack.midIfElse();
+            }
+        }
+    }
+
+    @Override public void enterIterStmt(MyParser.IterStmtContext ctx) {
+        if(ctx.WHILE()!=null){
+            stack.enterWhile();
+        }
+        else{
+            stack.enterScope();
+        }
+    }
+
+    @Override public void exitIterStmt(MyParser.IterStmtContext ctx) {
+        if(ctx.WHILE()!=null){
+            stack.exitWhile();
+        }
+        else{
+            stack.exitFor();
+            stack.enterScope();
+        }
+    }
+
+    @Override public void exitExp(MyParser.ExpContext ctx) {
+        if(ctx.parent instanceof MyParser.IterStmtContext pa){
+            if(pa.WHILE()==null){
+                stack.exitIncrFor();
             }
         }
     }

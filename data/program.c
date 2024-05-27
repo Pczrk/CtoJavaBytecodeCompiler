@@ -4,9 +4,10 @@ int[] kwadrat(int c){
 }
 
 void main(){
-    print(7.0 < 8.0);
-
-
+    for(int a=0; a<100; a+=1){
+        print(' ');
+        print(a);
+    }
     return;
 }
 

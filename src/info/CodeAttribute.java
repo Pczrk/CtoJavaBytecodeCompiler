@@ -85,6 +85,12 @@ public class CodeAttribute extends Attribute {
         maxStack = ByteBuffer.allocate(2).putShort((short) s.getStackSize()).array();
         maxLocals = ByteBuffer.allocate(2).putShort((short) s.getLocalsSize()).array();
         addCode(s.getCode());
+
+        if(!s.stackTypes.empty()){
+            System.out.println("On the stack the were variables left. Count: ");
+            System.out.println(s.stackTypes.size());
+            System.out.println(s.stackTypes.peek().t());
+        }
         /*for(Short offset : s.stackMapOffsets){
             stackMapTable.add251(offset);
         }*/
