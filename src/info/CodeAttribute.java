@@ -90,6 +90,7 @@ public class CodeAttribute extends Attribute {
             System.out.println("On the stack the were variables left. Count: ");
             System.out.println(s.stackTypes.size());
             System.out.println(s.stackTypes.peek().t());
+            System.out.println(s.stackTypes.peek().array);
         }
         /*for(Short offset : s.stackMapOffsets){
             stackMapTable.add251(offset);
@@ -101,11 +102,11 @@ public class CodeAttribute extends Attribute {
     }
 
     public void setMainFun() {
-        if(ClassFile.get().methodRefs().get("mainLORemIpSuM") == null){
+        if(ClassFile.get().methodRefs().get("main") == null){
             System.out.println("No main function detected");
         }
-        byte[] in = ClassFile.get().methodRefs().get("mainLORemIpSuM").a;
-        Type r = ClassFile.get().methodRefs().get("mainLORemIpSuM").b.returnType;
+        byte[] in = ClassFile.get().methodRefs().get("main").a;
+        Type r = ClassFile.get().methodRefs().get("main").b.returnType;
         if(r.ar() || r.t() > 0){
             System.out.println("Main must return void");
         }

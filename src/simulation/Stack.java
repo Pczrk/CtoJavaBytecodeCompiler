@@ -26,8 +26,6 @@ public class Stack {
 
     public Stack(String[] argNames, Method2 m){
         classFile = ClassFile.get();
-        if(classFile == null)
-            System.out.println("Singleton nie dziala");
         code = new byte[0];
         argsSize = argNames.length;
         locals = new HashMap<>();
@@ -353,7 +351,7 @@ public class Stack {
     public void exitScope(){
         int c = scopes.removeLast();
         for(int i = 0; i<c; i++){
-            locals.values().remove(locals.size()-1);
+            locals.values().removeIf(v-> Arrays.equals(v.index, new byte[]{(byte) (locals.size() - 1)}));
         }
     }
 
@@ -663,7 +661,7 @@ public class Stack {
         if(popResult && classFile.methodRefs().get(s).b.returnType.t()>0){
             pop();
         }
-        else{
+        else if(classFile.methodRefs().get(s).b.returnType.t()>0){
             stackPushType(classFile.methodRefs().get(s).b.returnType);
         }
     }
@@ -789,14 +787,36 @@ public class Stack {
         impers.add((short) code.length);
         ifeq();
         stackPopType();
+        gotoI();
     }
 
     public void exitIncrFor() {
         impers.add((short) code.length);
+        gotoI();
     }
 
     public void exitFor(){
-        short tot = (short) code.length;
+        int co = impers.removeLast();
+        int in = impers.removeLast();
+        int bo = impers.removeLast();
+
+        gotoI((short)(in + 6 - code.length));
+
+        byte[] data = ByteBuffer.allocate(2).putShort((short)(co - in)).array();
+        code[in+4] = data[0];
+        code[in+5] = data[1];
+
+        data = ByteBuffer.allocate(2).putShort((short)(code.length - in)).array();
+        code[in + 1] = data[0];
+        code[in + 2] = data[1];
+
+        data = ByteBuffer.allocate(2).putShort((short)(bo - co)).array();
+        code[co+1] = data[0];
+        code[co+2] = data[1];
+
+
+
+        /*short tot = (short) code.length;
         short cod = impers.removeLast();
         short inc = (short)(impers.removeLast() + 3);
         short isize = (short)(cod - inc);
@@ -817,7 +837,7 @@ public class Stack {
 
         byte[] data = ByteBuffer.allocate(2).putShort((short) (code.length - ifeq)).array();
         code[ifeq+1] = data[0];
-        code[ifeq+2] = data[1];
+        code[ifeq+2] = data[1];*/
     }
 
     public void enterPrint(){

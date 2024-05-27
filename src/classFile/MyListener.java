@@ -19,7 +19,7 @@ public class MyListener extends MyParserBaseListener {
     @Override public void enterProgram(MyParser.ProgramContext ctx) {
     }
     @Override public void exitProgram(MyParser.ProgramContext ctx) {
-        classFile.methods.get("main").codeAttribute.setMainFun();
+        //classFile.methods.get("main").codeAttribute.setMainFun();
         try {
             classFile.generateClassFile();
         }
@@ -29,6 +29,7 @@ public class MyListener extends MyParserBaseListener {
     }
 
     @Override public void enterFunDecl(MyParser.FunDeclContext ctx) {
+
         MyParser.ParamsContext params;
         Method2 m;
         String name;
@@ -48,35 +49,59 @@ public class MyListener extends MyParserBaseListener {
             name = ctx.nonVoidFunDecl().arrVoidFunDecl().ID().getText();
         }
 
-        if(name.equals("main")){
-            name+="LORemIpSuM";
-        }
-
-
         List<String> argNames = new ArrayList<>();
 
-        for(MyParser.ParamContext p : params.param()){
-            if(p.sinParam()!= null){
-                m.arguments.add(new Type(p.sinParam().typeSpec().getText(), 0));
-                argNames.add(p.sinParam().ID().getText());
+        if(name.equals("main")){
+            stack = new Stack(new String[0], m);
+        }
+        else{
+
+            for(MyParser.ParamContext p : params.param()){
+                if(p.sinParam()!= null){
+                    m.arguments.add(new Type(p.sinParam().typeSpec().getText(), 0));
+                    argNames.add(p.sinParam().ID().getText());
+                }
+                else{
+                    m.arguments.add(new Type(p.arrParam().typeSpec().getText(), 1));
+                    argNames.add(p.arrParam().ID().getText());
+                }
             }
-            else{
-                m.arguments.add(new Type(p.arrParam().typeSpec().getText(), 1));
-                argNames.add(p.arrParam().ID().getText());
+
+            stack = new Stack(argNames.toArray(new String[0]), m);
+
+            try {
+                currentFuncCode = classFile.createMethod(new byte[]{(byte) 0x00, (byte) 0x09}, name, m, argNames.toArray(new String[0]));
             }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
         }
 
-        stack = new Stack(argNames.toArray(new String[0]), m);
 
-        try {
-            currentFuncCode = classFile.createMethod(new byte[]{(byte) 0x00, (byte) 0x09}, name, m, argNames.toArray(new String[0]));
-        }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+
+
     }
     @Override public void exitFunDecl(MyParser.FunDeclContext ctx) {
-        currentFuncCode.fillWithStack(stack);
+        String name;
+        if(ctx.voidFunDecl()!=null){
+            name = ctx.voidFunDecl().ID().getText();
+        }
+        else if(ctx.nonVoidFunDecl().sinVoidFunDecl() != null){
+            name = ctx.nonVoidFunDecl().sinVoidFunDecl().ID().getText();
+        }
+        else{
+            name = ctx.nonVoidFunDecl().arrVoidFunDecl().ID().getText();
+        }
+
+        if(name.equals("main")){
+            classFile.methods.get("main").codeAttribute.fillWithStack(stack);
+
+        }
+        else{
+            currentFuncCode.fillWithStack(stack);
+
+        }
     }
 
     @Override public void enterVarDeclInit(MyParser.VarDeclInitContext ctx) {
@@ -428,7 +453,7 @@ public class MyListener extends MyParserBaseListener {
         }
         else{
             stack.exitFor();
-            stack.enterScope();
+            stack.exitScope();
         }
     }
 
