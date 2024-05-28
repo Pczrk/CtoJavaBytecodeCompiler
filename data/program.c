@@ -2,8 +2,10 @@ int kwadrat(int c){
     return c*c;
 }
 
+int globalVar = 123 * (int) false;
+
 void fibIter(int a){
-    int x = -1, y = 1;
+    int x = -1, y = (int) 1.0;
     for(int i = -1; i < a; i+=1){
         int temp = y + x;
         x = y;
@@ -26,6 +28,9 @@ void main(){
     fibIter(a);
     print(' ');
     print(fibRek(a));
+
+    print(' ');
+    print(globalVar);
 
     return;
 }

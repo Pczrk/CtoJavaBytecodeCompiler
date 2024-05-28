@@ -83,7 +83,7 @@ public class ClassFile {
         byte[] argumentsIndex = constantPoolInfo.addOrGetUtf8Constant(MethodDescriptor.fromMethod2(method2).build());
         byte[] nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(nameIndex,argumentsIndex);
         methodReferencesIndex.put(name,new Pair<>(constantPoolInfo.addMethodReferenceConstant(
-                name.equals("<init>") ? superClass : thisClass, nameAndTypeIndex),
+                (name.equals("<init>") || name.equals("<clinit>")) ? superClass : thisClass, nameAndTypeIndex),
                 method2));
 
         var method = methodInfo.addMethod(accessFlags,nameIndex,argumentsIndex,new AttributeInfo());
@@ -105,7 +105,7 @@ public class ClassFile {
         byte[] argumentsIndex = constantPoolInfo.addOrGetUtf8Constant(arguments);
         byte[] nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(nameIndex,argumentsIndex);
         methodReferencesIndex.put(name,new Pair<>(constantPoolInfo.addMethodReferenceConstant(
-                name.equals("<init>") ? superClass : thisClass, nameAndTypeIndex),
+                (name.equals("<init>") || name.equals("<clinit>")) ? superClass : thisClass, nameAndTypeIndex),
                 new Method2(new Type(5, 0)))); //TODO method from this method are not referncably in code, so no construcotrs to use for c programmers
 
         var method = methodInfo.addMethod(accessFlags,nameIndex,argumentsIndex,new AttributeInfo());
@@ -124,12 +124,11 @@ public class ClassFile {
     }
 
     //it's true for C but for bytecode it's static field
-    public void createGlobalVariable(String type, String name) throws Exception {
+    public void createGlobalVariableEnter(Type type, String name) throws Exception {
         if (!methods.containsKey("<clinit>")){
             createMethod(new byte[]{(byte) 0x00, (byte) 0x08},"<clinit>","()V",new String[0]);
         }
-        var code = methods.get("<clinit>");
-        FieldDescriptor fdesc = new FieldDescriptor(type, false);
+        FieldDescriptor fdesc = type.getDescriptor();
 
         var utf8NameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
         var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(fdesc.build());
@@ -147,54 +146,10 @@ public class ClassFile {
 //        }
     }
 
-    public void createGlobalVariableWithInit(String type, String name, Stack stack) throws Exception {
-        if (!methods.containsKey("<clinit>")){
-            createMethod(new byte[]{(byte) 0x00, (byte) 0x08},"<clinit>","()V",new String[0]);
-        }
-
-        FieldDescriptor fdesc = new FieldDescriptor(type, false);
-
-        var staticConstCode = methods.get("<clinit>");
-
-        var utf8NameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
-        var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(fdesc.build());
-
-        var nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(utf8NameIndex,utf8TypeIndex);
-        var fieldRefIndex = constantPoolInfo.addFieldReferenceConstant(thisClass,nameAndTypeIndex);
-        if (fieldReferencesIndex.containsKey(name))
-            throw new Exception("Variable with this name already defined"); //TODO lazy error, w C jest shadowing zmiennych, ale to na koncu jesli wogole :D :P :O
-        fieldReferencesIndex.put(name, new Variable(fieldRefIndex, type));
-
-        staticConstCode.codeAttribute.setStackLocalsSize(stack.getStackSize(), stack.getLocalsSize());
-
-        staticConstCode.codeAttribute.addCode(stack.getCode());
-
-        staticConstCode.codeAttribute.addCode(ByteBuffer.allocate(3).put((byte) 0xb3).put(fieldRefIndex).array());
-        //staticConstCode.codeAttribute.addCode(new byte[]{(byte) 0xb1});
-
-//        for (var arg : arguments) { TODO TUTAJ INICJOWANIE ZMIENNYCH
-//            if (!utf8ConstantIndex.containsKey(arg))
-//                utf8ConstantIndex.put(type, constantPoolInfo.addUtf8Constant(type));
-//            var utf8ArgumentIndex = utf8ConstantIndex.get(type);
-//        }
-    }
-
-    public void createGlobalArrayWithInit(String type, String name, String[] values) throws Exception {
-        if (!methods.containsKey("<clinit>")){
-            createMethod(new byte[]{(byte) 0x00, (byte) 0x08},"<clinit>","()V",new String[0]);
-
-        }
-        FieldDescriptor fdesc = new FieldDescriptor(type, false);
-
+    public void createGlobalVariableExit(Stack stack) {
         var code = methods.get("<clinit>");
-        var utf8NameIndex = constantPoolInfo.addOrGetUtf8Constant(name);
-        var utf8TypeIndex = constantPoolInfo.addOrGetUtf8Constant(fdesc.build());
+        code.codeAttribute.appendStack(stack);
 
-        var nameAndTypeIndex = constantPoolInfo.addNameAndTypeConstant(utf8NameIndex,utf8TypeIndex);
-        var fieldRefIndex = constantPoolInfo.addFieldReferenceConstant(thisClass,nameAndTypeIndex);
-        if (fieldReferencesIndex.containsKey(name))
-            throw new Exception("Variable with this name already defined"); //TODO lazy error, w C jest shadowing zmiennych, ale to na koncu jesli wogole :D :P :O
-        fieldReferencesIndex.put(name, new Variable(fieldRefIndex, type));
 
 //        for (var arg : arguments) { TODO TUTAJ INICJOWANIE ZMIENNYCH
 //            if (!utf8ConstantIndex.containsKey(arg))

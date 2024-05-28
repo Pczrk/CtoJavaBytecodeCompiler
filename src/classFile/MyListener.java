@@ -19,7 +19,9 @@ public class MyListener extends MyParserBaseListener {
     @Override public void enterProgram(MyParser.ProgramContext ctx) {
     }
     @Override public void exitProgram(MyParser.ProgramContext ctx) {
-        //classFile.methods.get("main").codeAttribute.setMainFun();
+        if(classFile.methods.get("<clinit>")!= null){
+            classFile.methods.get("<clinit>").codeAttribute.appendEmptyReturn();
+        }
         try {
             classFile.generateClassFile();
         }
@@ -105,18 +107,65 @@ public class MyListener extends MyParserBaseListener {
     }
 
     @Override public void enterVarDeclInit(MyParser.VarDeclInitContext ctx) {
-    }
-
-    @Override public void exitVarDeclInit(MyParser.VarDeclInitContext ctx) {
-        stack.addVar(ctx.varDeclId().ID().getText(), new Type(((MyParser.VarSinDeclContext)ctx.parent.parent).typeSpec().getText(), 0));
-        if(ctx.ASSIGN()!=null){
-            stack.storeVar(ctx.varDeclId().ID().getText());
+        if(ctx.parent.parent.parent instanceof MyParser.VarDeclContext){
+            stack = new Stack(new String[0], new Method2(new Type(0, 0)));
+            try {
+                classFile.createGlobalVariableEnter(
+                        new Type(((MyParser.VarSinDeclContext) ctx.parent.parent).typeSpec().getText(), 0),
+                        ctx.varDeclId().ID().getText());
+            }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+            }
         }
     }
 
+    @Override public void exitVarDeclInit(MyParser.VarDeclInitContext ctx) {
+        if(ctx.parent.parent.parent instanceof MyParser.ScopedVarDeclContext){
+            stack.addVar(ctx.varDeclId().ID().getText(), new Type(((MyParser.VarSinDeclContext)ctx.parent.parent).typeSpec().getText(), 0));
+        }
+
+        if(ctx.ASSIGN()!=null){
+            stack.storeVar(ctx.varDeclId().ID().getText());
+        }
+
+        if(ctx.parent.parent.parent instanceof MyParser.VarDeclContext){
+            classFile.createGlobalVariableExit(stack);
+        }
+
+    }
+
+    @Override public void enterArrDeclInit(MyParser.ArrDeclInitContext ctx){
+        if(ctx.parent.parent.parent instanceof MyParser.VarDeclContext){
+            stack = new Stack(new String[0], new Method2(new Type(0, 0)));
+            try {
+                classFile.createGlobalVariableEnter(
+                        new Type(((MyParser.VarArrDeclContext) ctx.parent.parent.parent).typeSpec().getText(), 1),
+                        ctx.arrDeclId().ID().getText());
+            }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    @Override public void exitArrDeclInit(MyParser.ArrDeclInitContext ctx){
+        if(ctx.parent.parent.parent instanceof MyParser.VarDeclContext){
+            try {
+                classFile.createGlobalVariableExit(stack);
+            }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+
     @Override public void exitArrDeclId(MyParser.ArrDeclIdContext ctx) {
-        stack.addArr(ctx.ID().getText(),
-                new Type(((MyParser.VarArrDeclContext)ctx.parent.parent.parent).typeSpec().getText(), 1));
+        if(ctx.parent.parent.parent.parent instanceof MyParser.ScopedVarDeclContext){
+            stack.addArr(ctx.ID().getText(),
+                    new Type(((MyParser.VarArrDeclContext)ctx.parent.parent.parent).typeSpec().getText(), 1));
+        }
     }
 
     /**

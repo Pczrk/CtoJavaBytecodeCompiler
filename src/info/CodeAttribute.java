@@ -97,8 +97,30 @@ public class CodeAttribute extends Attribute {
         }*/
     }
 
+    public void appendStack(Stack s){
+        maxStack = ByteBuffer.allocate(2).putShort(
+                (short) Math.max((short)s.getStackSize(), (short)(maxStack[0]<<8|maxStack[1]))
+                ).array();
+        maxLocals = ByteBuffer.allocate(2).putShort(
+                (short) Math.max((short)s.getLocalsSize(), (short)(maxLocals[0]<<8|maxLocals[1]))
+        ).array();
+
+        addCode(s.getCode());
+
+        if(!s.stackTypes.empty()){
+            System.out.println("On the stack the were variables left. Count: ");
+            System.out.println(s.stackTypes.size());
+            System.out.println(s.stackTypes.peek().t());
+            System.out.println(s.stackTypes.peek().array);
+        }
+    }
+
     public void addEmptyReturn() {
-        code = ByteBuffer.allocate(code.length + 1).put(code).put((byte) 0xb1).array();
+        addCode(ByteBuffer.allocate(code.length + 1).put(code).put((byte) 0xb1).array());
+    }
+
+    public void appendEmptyReturn() {
+        addCode(ByteBuffer.allocate(1).put((byte) 0xb1).array());
     }
 
     public void setMainFun() {
