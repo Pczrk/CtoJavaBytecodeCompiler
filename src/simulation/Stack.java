@@ -912,7 +912,7 @@ public class Stack {
     }
 
     public Type stackPeekType(int i){
-        return stackTypes.get(i);
+        return stackTypes.get(stackTypes.size() - 1 - i);
     }
 
     public byte[] getCode(){
