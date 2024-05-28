@@ -375,7 +375,18 @@ public class MyListener extends MyParserBaseListener {
 
     @Override public void exitCharSimpleExp(MyParser.CharSimpleExpContext ctx){
         if(ctx.CHARCONST()!=null){
-            stack.getConstChar(ctx.CHARCONST().getText().substring(1, 2));
+            if(ctx.CHARCONST().getText().length() == 3){
+                stack.getConstChar(ctx.CHARCONST().getText().substring(1, 2));
+            }
+            else{
+                if(ctx.CHARCONST().getText().charAt(2) == 't'){
+                    stack.getConstChar("\t");
+                }
+                else if(ctx.CHARCONST().getText().charAt(2) == 'n'){
+                    stack.getConstChar("\n");
+
+                }
+            }
         }
         else if(ctx.ID()!=null){
             if(ctx.LSB()!=null){
