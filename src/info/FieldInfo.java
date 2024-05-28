@@ -17,6 +17,12 @@ import java.util.List;
 
 public class FieldInfo implements Info { //TODO
     List<Field> fieldList = new ArrayList<>();
+
+    public Field addField(byte[] accessFlags, byte[] nameIndex, byte[] descriptorIndex) {
+        var field = new Field(accessFlags,nameIndex,descriptorIndex,new AttributeInfo());
+        fieldList.add(field);
+        return field;
+    }
     @Override
     public int getBytesLength() {
         int bytesLength = 0;

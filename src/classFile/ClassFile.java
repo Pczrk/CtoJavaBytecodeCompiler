@@ -48,6 +48,7 @@ public class ClassFile {
     Map<String, Pair<byte[], Method2>> methodReferencesIndex = new HashMap<>();
     Map<String,Variable> fieldReferencesIndex = new HashMap<>();
     Map<String, Method> methods = new HashMap<>();
+    Map<String, Field> fields = new HashMap<>();
     public ClassFile() throws Exception {
         createThisAndSuperClass();
         createDefaultConstructor();
@@ -138,6 +139,7 @@ public class ClassFile {
         if (fieldReferencesIndex.containsKey(name))
             throw new Exception("Variable with this name already defined"); //TODO lazy error, w C jest shadowing zmiennych, ale to na koncu jesli wogole :D :P :O
         fieldReferencesIndex.put(name, new Variable(fieldRefIndex, type));
+        fields.put(name,fieldInfo.addField(new byte[]{(byte) 0x00,(byte) 0x08},utf8NameIndex,utf8TypeIndex));
 
 //        for (var arg : arguments) { TODO TUTAJ INICJOWANIE ZMIENNYCH
 //            if (!utf8ConstantIndex.containsKey(arg))
