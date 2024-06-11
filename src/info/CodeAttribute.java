@@ -81,13 +81,9 @@ public class CodeAttribute extends Attribute {
 
     }
 
-    public void fillWithStack(Stack s, boolean isMain){
+    public void fillWithStack(Stack s){
         maxStack = ByteBuffer.allocate(2).putShort((short) s.getStackSize()).array();
-        int lc = s.getLocalsSize();
-        if(isMain && lc == 0){
-            lc = 1;
-        }
-        maxLocals = ByteBuffer.allocate(2).putShort((short) lc).array();
+        maxLocals = ByteBuffer.allocate(2).putShort((short) s.getLocalsSize()).array();
         addCode(s.getCode());
 
         if(!s.stackTypes.empty()){

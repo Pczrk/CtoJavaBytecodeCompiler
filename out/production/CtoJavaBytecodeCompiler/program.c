@@ -1,8 +1,7 @@
+int globalVar = 123 * (int) false;
 
 void main(){
-    print('a');
-    print('\n');
-    print('a');
+    print(globalVar);
 
     return;
 }

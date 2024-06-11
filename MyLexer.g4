@@ -56,9 +56,7 @@ BOOL            : 'bool';
 // CONSTANT:
 FLOATCONST	    : [0-9]+ '.' [0-9]+;
 NUMCONST        : [0-9]+;
-CHARCONST       : '\''[a-zA-Z ]'\''
-                | '\'''\\''n''\''
-                | '\'''\\''t''\'';
+CHARCONST       : '\''[a-zA-Z \t\r\n]'\'';
 STRINGCONST     : '"'[a-zA-Z]+'"';
 
 // IDENTIFIER:

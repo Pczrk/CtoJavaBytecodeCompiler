@@ -1,13 +1,13 @@
 # CtoJavaBytecodeCompiler
-Generowanie klas parsera:
+generowanie drzewa:
 ```
-java -jar ./antlr-4.13.1-complete.jar MyParser.g4 MyLexer.g4 -o .\src\antlrGen
+antlr4-parse .\Lexer.g4 .\Parser.g4 program -gui .\program.c
 ```
-Dekompilacja czesciowa bytecode:
+dekompilacja czesciowa bytecode:
 ```
 javap -v Main.class
 ```
-Interpretacja class filu:
+kompilacja class filu:
 ```
-java -noverify Main
+java Main
 ```
