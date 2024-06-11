@@ -95,6 +95,19 @@ public class Stack {
         storeVar(s); // przechowuje referencje ze szczytu stosu do zmiennych lokalnych
     }
 
+    public void addGlobalArr(String s, Type type){
+        byte atype = 10;
+        switch (type.t()){
+            case 2 -> atype = 6;
+            case 3 -> atype = 8;
+            case 4 -> atype = 5;
+        }
+        addCode(ByteBuffer.allocate(2).put((byte) 0xbc).put(atype).array());
+        stackPopType();
+        stackPushType(type);
+        storeVar(s);
+    }
+
     public void getVar(String s){
         if(classFile.fieldRefs().containsKey(s)){
             addCode(ByteBuffer.allocate(3).put((byte)0xb2).put(classFile.fieldRefs().get(s).index).array());

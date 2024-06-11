@@ -97,11 +97,11 @@ public class MyListener extends MyParserBaseListener {
         }
 
         if(name.equals("main")){
-            classFile.methods.get("main").codeAttribute.fillWithStack(stack);
+            classFile.methods.get("main").codeAttribute.fillWithStack(stack, true);
 
         }
         else{
-            currentFuncCode.fillWithStack(stack);
+            currentFuncCode.fillWithStack(stack, false);
 
         }
     }
@@ -140,7 +140,7 @@ public class MyListener extends MyParserBaseListener {
             stack = new Stack(new String[0], new Method2(new Type(0, 0)));
             try {
                 classFile.createGlobalVariableEnter(
-                        new Type(((MyParser.VarArrDeclContext) ctx.parent.parent.parent).typeSpec().getText(), 1),
+                        new Type(((MyParser.VarArrDeclContext) ctx.parent.parent).typeSpec().getText(), 1),
                         ctx.arrDeclId().ID().getText());
             }
             catch (Exception e){
@@ -164,6 +164,10 @@ public class MyListener extends MyParserBaseListener {
     @Override public void exitArrDeclId(MyParser.ArrDeclIdContext ctx) {
         if(ctx.parent.parent.parent.parent instanceof MyParser.ScopedVarDeclContext){
             stack.addArr(ctx.ID().getText(),
+                    new Type(((MyParser.VarArrDeclContext)ctx.parent.parent.parent).typeSpec().getText(), 1));
+        }
+        else{
+            stack.addGlobalArr(ctx.ID().getText(),
                     new Type(((MyParser.VarArrDeclContext)ctx.parent.parent.parent).typeSpec().getText(), 1));
         }
     }
@@ -371,7 +375,18 @@ public class MyListener extends MyParserBaseListener {
 
     @Override public void exitCharSimpleExp(MyParser.CharSimpleExpContext ctx){
         if(ctx.CHARCONST()!=null){
-            stack.getConstChar(ctx.CHARCONST().getText().substring(1, 2));
+            if(ctx.CHARCONST().getText().length() == 3){
+                stack.getConstChar(ctx.CHARCONST().getText().substring(1, 2));
+            }
+            else{
+                if(ctx.CHARCONST().getText().charAt(2) == 't'){
+                    stack.getConstChar("\t");
+                }
+                else if(ctx.CHARCONST().getText().charAt(2) == 'n'){
+                    stack.getConstChar("\n");
+
+                }
+            }
         }
         else if(ctx.ID()!=null){
             if(ctx.LSB()!=null){
