@@ -15,15 +15,23 @@ public class Stack {
     int maxStackSize = 0;
     int maxLocalsSize = 0;
     int argsSize = 0;
-    HashMap<String, Variable> locals;
+    HashMap<String, Variable> locals; //mapa zmiennych lokalnych, zmienne posiadają swój typ
     byte[] code;
 
+    // wskazuje, który byte (index w tablicy) gdzie znajduje się skok, który należy jeszcze uzupełnić,
+    // przydany w przypadku if/else/while/for
     List<Short> impers;
 
+    // lista lokalsów w danym scopie / trzyma ile w danym scopie jest zadeklarowanych zmiennych,
+    // przy wychodzeniu należy zwolnić taką ilość zmiennych z mapy locals ()
     List<Integer> scopes;
 
+    // typy zmiennych znajdujących się na stosie
     public java.util.Stack<Type> stackTypes;
 
+    // stack wołany jest, kiedy:
+    // a) deklarowana jest zmienna globalna, aby nadać jej wartość
+    // b) wchodzimy w deklaracje funkcji
     public Stack(String[] argNames, Method2 m){
         classFile = ClassFile.get();
         code = new byte[0];
@@ -33,7 +41,7 @@ public class Stack {
         scopes = new ArrayList<>();
         scopes.add(0);
         impers = new ArrayList<>();
-        for(int i=0; i< argNames.length; i++){
+        for(int i=0; i< argNames.length; i++){ // pierwsze zmienne lokalny inicjowane (argumenty funkcji) wraz z typami
             addVar(argNames[i], m.arguments.get(i));
         }
     }
@@ -43,20 +51,21 @@ public class Stack {
         code = ByteBuffer.allocate(byteLength).put(code).put(newCode).array();
     }
 
-    public void addVar(String s, Type type){
-        if(classFile.fieldRefs().containsKey(s)){
+    public void addVar(String s, Type type){ //dodaję nową zmiennę
+        if(classFile.fieldRefs().containsKey(s)){ //sprawdza czy nie istnieje taka zmienna globalna
             System.out.println("Variable with name: \"" + s + "\" already exists");
             return;
         }
-        if(locals.containsKey(s)){
+        if(locals.containsKey(s)){ //sprawdza czy nie istnieje taka zmienna lokalna
             System.out.println("Variable with name: \"" + s + "\" already exists");
             return;
         }
-        locals.put(s, new Variable(locals.size(), type));
+        locals.put(s, new Variable(locals.size(), type)); // dodaje localą zmienną do tablicy (do mapy)
         maxLocalsSize = Math.max(maxLocalsSize, locals.size());
-        scopes.add(scopes.removeLast() + 1);
+        scopes.add(scopes.removeLast() + 1); // incrementuje wartość na szycie stosu scopes
     }
 
+    // dodaje nowy array, oczekujemy, że na stosie znajduje się integer, który jest równy długości tablicy
     public void addArr(String s, Type type){
         if(classFile.fieldRefs().containsKey(s)){
             System.out.println("Variable with name: \"" + s + "\" already exists");
@@ -71,16 +80,19 @@ public class Stack {
         maxLocalsSize = Math.max(maxLocalsSize, locals.size());
         scopes.add(scopes.removeLast() + 1);
 
-        byte atype = 10;
+        byte atype = 10; //array integer'ów
         switch (type.t()){
             case 2 -> atype = 6;
             case 3 -> atype = 8;
             case 4 -> atype = 5;
         }
+        // pierwszy byte = polecenie do stworzenia arraya
+        // drugi byte = parametr, który wskazuje na typ arraya
         addCode(ByteBuffer.allocate(2).put((byte) 0xbc).put(atype).array());
-        stackPopType();
-        stackPushType(type);
-        storeVar(s);
+
+        stackPopType(); // usuwamy ze stosu długość tablicy
+        stackPushType(type); // wpychamy na stos typ tablicy
+        storeVar(s); // przechowuje referencje ze szczytu stosu do zmiennych lokalnych
     }
 
     public void getVar(String s){
@@ -348,6 +360,7 @@ public class Stack {
         scopes.add(0);
     }
 
+    // celem funkcji jest usunięcie c ostatnich elementów z tablicy zmiennych lokalnych
     public void exitScope(){
         int c = scopes.removeLast();
         for(int i = 0; i<c; i++){
